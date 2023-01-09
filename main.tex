@@ -1,0 +1,189 @@
+\documentclass[10pt]{beamer}
+
+\usepackage{natbib}
+\bibliographystyle{apalike}
+
+%% Packages:
+%% --------------------------------------------------------------
+
+\usetheme[progressbar=frametitle]{metropolis}
+\usepackage{appendixnumberbeamer}
+\usepackage{multirow}
+\usepackage{pgfplots}
+\usepgfplotslibrary{dateplot}
+\usepackage{dsfont}
+\usepackage{xfrac}
+\usepackage{framed}
+\usepackage{xspace}
+\usepackage{makecell}
+\usepackage{color}
+\usepackage{colortbl}
+\usepackage{xcolor}
+\usepackage{algorithm2e}
+\usepackage{algpseudocode}
+\usepackage{twoopt}
+\usepackage{bm}
+\usepackage{float}
+\usepackage{csquotes}
+\usepackage{blkarray, bigstrut}
+\usepackage{xparse}
+\usepackage{transparent}
+
+
+\renewcommand\topstrut[1][1.2ex]{\setlength\bigstrutjot{#1}{\bigstrut[t]}}
+\renewcommand\botstrut[1][0.9ex]{\setlength\bigstrutjot{#1}{\bigstrut[b]}}
+
+
+%% For speaker notes:
+%% -------------------------------------------------------------
+
+%\usepackage{pgfpages}
+%\setbeameroption{show notes}
+%\setbeameroption{show notes on second screen=right}
+
+%%!! Run with `pdfpc --notes=right main.pdf
+
+%% Custom Commands:
+%% --------------------------------------------------------------
+
+\usepackage{scalerel,stackengine}
+\stackMath
+\newcommand\reallywidehat[1]{%
+\savestack{\tmpbox}{\stretchto{%
+  \scaleto{%
+    \scalerel*[\widthof{\ensuremath{#1}}]{\kern.1pt\mathchar"0362\kern.1pt}%
+    {\rule{0ex}{\textheight}}%WIDTH-LIMITED CIRCUMFLEX
+  }{\textheight}%
+}{2.4ex}}%
+\stackon[-6.9pt]{#1}{\tmpbox}%
+}
+\parskip 1ex
+
+\newcommand*{\tran}{{\mkern-1.5mu\mathsf{T}}}
+%\newcommand{\AUC}{\text{AUC}}
+%\newcommand{\eAUC}{\reallywidehat{\AUC}}
+%\def\oplogit{\mathop{\sf logit}}
+%\newcommand{\logit}[1]{\oplogit\left(#1\right)}
+%\renewcommand{\ln}{\mathop{\sf ln}}
+%\def\var{\mathop{\sf var}}
+%\def\mean{\mathop{\sf m}}
+%\def\ci{\mathop{\sf ci}}
+%\def\evar{\reallywidehat{\var}}
+%\newcommand{\ROC}{\text{ROC}}
+
+% \definecolor{metropolis_theme_color}{RGB}{35,55,59}
+\definecolor{metropolis_theme_color}{RGB}{42,42,42}
+
+%% Color customizations:
+\definecolor{blue}{RGB}{0,155,164}
+\definecolor{lime}{RGB}{175,202,11}
+\definecolor{green}{RGB}{0,137,62}
+\definecolor{titleblue}{RGB}{4,58,63}
+\definecolor{deepskyblue}{RGB}{0,191,255}
+\definecolor{mygrey}{RGB}{240,240,240}
+\definecolor{chighlight}{RGB}{139,35,35}
+
+\setbeamercolor{frametitle}{fg=mygrey, bg=metropolis_theme_color}
+\setbeamercolor{progress bar}{fg=metropolis_theme_color}
+\setbeamercolor{background canvas}{bg=white}
+
+\setbeamertemplate{frame numbering}{%
+  \insertframenumber{}/\inserttotalframenumber
+}
+\makeatother
+
+\setbeamertemplate{footline}[text line]{%
+    \noindent\hspace*{\dimexpr-\oddsidemargin-1in\relax}%
+     \colorbox{metropolis_theme_color}{
+     \makebox[\dimexpr\paperwidth-2\fboxsep\relax]{
+     \color{mygrey}
+     \begin{minipage}{0.33\linewidth}
+       \secname
+     \end{minipage}\hfill
+     \begin{minipage}{0.33\linewidth}
+       \centering
+       \insertshortauthor
+     \end{minipage}\hfill
+     \begin{minipage}{0.33\linewidth}
+       \flushright
+       \insertframenumber{}/\inserttotalframenumber
+     \end{minipage}
+     }}%
+  \hspace*{-\paperwidth}
+}
+
+%% Shaded for nicer code highlighting:
+%% ---------------------------------------------------------------
+
+\usepackage{mdframed}
+% \usepackage{verbatim}
+
+% Define Shaded if not defined:
+\makeatletter
+\@ifundefined{Shaded}{%
+  \newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}%
+}{}
+\makeatother
+
+\renewenvironment{Shaded}{
+  \begin{mdframed}[
+    backgroundcolor=mygrey,
+    linecolor=metropolis_theme_color,
+    rightline=false,
+		leftline=false
+  ]}{
+  \end{mdframed}
+}
+
+
+
+%% Titlepage:
+%% --------------------------------------------------------------
+
+\title{Modern approaches for component-wise boosting:}
+\subtitle{Automation, efficiency, and distributed computing with application to the medical domain}
+\date{March 24, 2023}
+\author{\textbf{Daniel Schalk}}
+\institute{\textbf{Supervisor:} Prof. Dr. Bernd Bischl\\
+\textbf{Referees:} Prof. Dr. Matthias Schmid, PD Dr. Fabian Scheipl\\
+\textbf{Chair of the examination panel:} Prof. Dr. Christian Heumann}
+\titlegraphic{
+    \vspace{3cm}\hspace{5.4cm}\transparent{0.1}\includegraphics[height=8.5cm]{figures/LMU.png}
+    \vspace{-3cm}
+}
+
+%% Text:
+%% --------------------------------------------------------------
+
+\begin{document}
+
+\maketitle
+
+\section{Bla}
+
+\begin{frame}[allowframebreaks]{Bla}
+
+  Bla
+  \citep[see, e.g.,][]{Pepe2003}, or \cite{delong1988comparing}
+
+\end{frame}
+
+\appendix
+
+\begin{frame}[allowframebreaks]{References}
+
+\nocite{*}
+\scriptsize
+\bibliography{references}
+
+\end{frame}
+
+\section{Backup slides}
+
+\begin{frame}{Backup}
+
+bla
+
+\end{frame}
+
+\end{document}
