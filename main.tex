@@ -8,30 +8,50 @@
 
 \usetheme[progressbar=frametitle]{metropolis}
 \usepackage{appendixnumberbeamer}
-\usepackage{multirow}
-\usepackage{pgfplots}
-\usepgfplotslibrary{dateplot}
 \usepackage{dsfont}
-\usepackage{xfrac}
-\usepackage{framed}
-\usepackage{xspace}
-\usepackage{makecell}
-\usepackage{color}
-\usepackage{colortbl}
-\usepackage{xcolor}
-\usepackage{algorithm2e}
-\usepackage{algpseudocode}
-\usepackage{twoopt}
-\usepackage{bm}
-\usepackage{float}
+\usepackage{verbatim}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{amsfonts}
 \usepackage{csquotes}
-\usepackage{blkarray, bigstrut}
-\usepackage{xparse}
+\usepackage{multirow}
+\usepackage{longtable}
+\usepackage{enumerate}
+\usepackage{bm}
+\usepackage{bbm}
+\usepackage{natbib}
+% \usepackage[absolute,overlay]{textpos}
+\usepackage{psfrag}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{algpseudocodex}
+\usepackage{float}
+\usepackage{eqnarray}
+\usepackage{arydshln}
+\usepackage{tabularx}
+\usepackage{placeins}
+\usepackage{tikz}
+\usepackage{setspace}
+\usetikzlibrary{shapes,arrows,automata,positioning,calc}
+\usepackage{subfig}
+% \usepackage{paralist}
+\usepackage{graphicx}
+\usepackage{array}
+\usepackage{framed}
+\usepackage{excludeonly}
+\usepackage{fancyvrb}
+\usecolortheme{dove}
+% \usefonttheme{serif}
+\usepackage{xfrac}
+\usepackage{xcolor}
+\usepackage{mdframed}
+\usepackage{caption}
+\captionsetup[figure]{labelformat=empty}
 \usepackage{transparent}
 
-
-\renewcommand\topstrut[1][1.2ex]{\setlength\bigstrutjot{#1}{\bigstrut[t]}}
-\renewcommand\botstrut[1][0.9ex]{\setlength\bigstrutjot{#1}{\bigstrut[b]}}
+%\renewcommand\topstrut[1][1.2ex]{\setlength\bigstrutjot{#1}{\bigstrut[t]}}
+%\renewcommand\botstrut[1][0.9ex]{\setlength\bigstrutjot{#1}{\bigstrut[b]}}
 
 
 %% For speaker notes:
@@ -59,7 +79,7 @@
 }
 \parskip 1ex
 
-\newcommand*{\tran}{{\mkern-1.5mu\mathsf{T}}}
+%\newcommand*{\tran}{{\mkern-1.5mu\mathsf{T}}}
 %\newcommand{\AUC}{\text{AUC}}
 %\newcommand{\eAUC}{\reallywidehat{\AUC}}
 %\def\oplogit{\mathop{\sf logit}}
@@ -135,7 +155,9 @@
   \end{mdframed}
 }
 
+%% Input custom stuff:
 
+\input{commands}
 
 %% Titlepage:
 %% --------------------------------------------------------------
@@ -159,7 +181,106 @@
 
 \maketitle
 
-\section{Bla}
+\section*{Overview}
+
+\begin{frame}{Publications}
+
+  List with all Publications
+
+\end{frame}
+
+\begin{frame}{Structure of the talk}
+  \tableofcontents
+\end{frame}
+
+\section{Background}
+\subsection{S1}
+
+\begin{frame}{Terminology}
+\end{frame}
+
+\begin{frame}{Component-wise boosting}
+
+  \begin{algorithm}[H]
+  \footnotesize
+  \caption{Vanilla CWB algorithm}\label{algo:cwb}
+  \vspace{0.15cm}
+  \hspace*{\algorithmicindent} \textbf{Input} Train data $\D$, learning rate $\nu$, number of boosting iterations $M$, loss\\
+  \hspace*{\algorithmicindent} \phantom{\textbf{Input} } function $L$, base learners $b_1, \dots, b_\blK$\\
+    \hspace*{\algorithmicindent} \textbf{Output} Model $\fh = \fmh[M]$\vspace{0.1cm}
+  \hrule
+  \begin{algorithmic}[1]
+  \Procedure{$\operatorname{CWB}$}{$\D,\nu,L,b_1, \dots, b_\blK$}
+      \State Initialize: $f_0 = \fh^{[0]}(\xv) = \argmin_{c\in\mathcal{Y}}\riske(c|\D)$
+      \While{$m \leq M$}
+          \State $\rmi = -\left.\pd{\Lxyi}{f(\xi)}\right|_{f = \fmdh},\ \ \forall i \in \{1, \dots, n\}$%\label{algo:cwb:line:pr}
+          \For{$\blk \in \{1, \dots, \blK\}$}
+              \State $\tbmh_\blk = \left(\design_\blk^\tran \design_\blk + \bm{K}_\blk\right)^{-1} \design^\tran_\blk \rmm$%\label{algo:cwb:line:fitbl}
+              \State $\sse_\blk = \sum_{i=1}^n(\rmi - b_\blk(\xi | \tbmh_\blk))^2$% \label{algo:cwb:line:sse}
+          \EndFor
+          \State $\blk^{[m]} = \argmin_{\blk\in\{1, \dots, \blK\}} \sse_\blk$% \label{algo:cwb:line:blselection}
+          \State $\fmh(\xv) = \fmdh(\xv) + \nu b_{\blk^{[m]}} (\xv | \tbmh_{\blk^{[m]}})$
+      \EndWhile
+      \State \textbf{return} $\fh = \fh^{[M]}$
+  \EndProcedure
+  \end{algorithmic}
+  \end{algorithm}
+\end{frame}
+
+\section{Efficiency}
+
+\begin{frame}{Efficiency}
+  About
+\end{frame}
+
+\begin{frame}{Adaption}
+  About
+\end{frame}
+
+\begin{frame}{Results}
+  About
+\end{frame}
+
+\begin{frame}{}
+
+
+\section{Automation}
+
+\begin{frame}{Automation}
+  About
+\end{frame}
+
+\begin{frame}{Autocompboost}
+  About
+\end{frame}
+
+\begin{frame}{Results}
+  About
+\end{frame}
+
+\begin{frame}{Outlook}
+  About
+\end{frame}
+
+
+\section{Distributed computing}
+
+\begin{frame}{Distributed computing}
+  About
+\end{frame}
+
+\begin{frame}{Adaption}
+  About
+\end{frame}
+
+\begin{frame}{Results}
+  About
+\end{frame}
+
+\begin{frame}{Outlook}
+  About
+\end{frame}
+
 
 \begin{frame}[allowframebreaks]{Bla}
 
