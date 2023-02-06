@@ -3,9 +3,9 @@ BIBENGINE = bibtex
 FILE      = main
 MAKE      = make
 
-.PHONY: all clean compile bcompile
+.PHONY: all clean compile bcompile figures
 
-all:
+all: figures
 	@$(MAKE) --no-print-directory clean
 	@$(MAKE) --no-print-directory compile || true # Prevent make from stopping during the first compilation
 	@$(MAKE) --no-print-directory bcompile
@@ -28,7 +28,10 @@ clean:
  		  "$(FILE).nav" || true
 
 compile:
-	$(ENGINE) "$(FILE).tex"
+	$(ENGINE) "$(FILE).tex" || true
 
 bcompile:
 	$(BIBENGINE) "$(FILE).aux"
+
+figures:
+	Rscript rsrc/fig-cboost-animation.R

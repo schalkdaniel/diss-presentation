@@ -197,9 +197,45 @@
 \subsection{S1}
 
 \begin{frame}{Terminology}
+  \begin{itemize}
+
+    \item
+      $p$-dimensional covariate or feature vector $\xv = (x_1, \dots, x_p) \in \Xspace =  \Xspace_1 \times \cdots\times$ and target variable $y\in\Yspace$.
+
+    \item
+      Data set $\D = \Dset$ with $(\xi, \yi)$ sampled from an unknown probability distribution $\mathbb{P}_{xy}$.
+
+    \item
+      True underlying relationship $f : \Xspace^p \to \R$, $\xv \mapsto f(\xv)$.
+
+    \item
+      Goal of Machine Learning (ML) is to estimate a model $\fh = \argmin_{f} \riske(f | \D)$ with
+      \begin{itemize}
+        \item Empirical risk $\riske(f | \D) = n^{-1} \sum_{(\xv, y)\in\D} L(y, \fh(\xv))$ and
+        \item Loss function $L : \Yspace\times\Yspace \to \R_+$, $(y,\yhat) \mapsto L(y,\yhat)$.
+      \end{itemize}
+
+    \item
+      The inducer $\Ind : \mathbb{D} \times \hpspace \to \fspace$, $(\D, \hp) \mapsto \fh=\Ind_{\hp}(\D)$ gets a data set $\D\in\mathbb{D}$ with hyperparameters (HPs) $\hp\in\hpspace$.
+
+  \end{itemize}
 \end{frame}
 
-\begin{frame}{Component-wise boosting}
+\begin{frame}{Gradient boosting}
+  \begin{itemize}
+    \item
+      Introduce pseudo residuals etc.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Component-wise gradient boosting -- Basics}
+  \begin{itemize}
+    \item
+      Introduce base learners etc.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Component-wise gradient boosting -- Algorithm}
 
   \begin{algorithm}[H]
   \footnotesize
@@ -227,6 +263,8 @@
   \end{algorithm}
 \end{frame}
 
+\input{figures/fig-cwb-anim.tex}
+
 \section{Efficiency}
 
 \begin{frame}{Efficiency}
@@ -241,7 +279,6 @@
   About
 \end{frame}
 
-\begin{frame}{}
 
 
 \section{Automation}
