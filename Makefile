@@ -3,9 +3,11 @@ BIBENGINE = bibtex
 FILE      = main
 MAKE      = make
 
-.PHONY: all clean compile bcompile figures
+.PHONY: all pdf clean compile bcompile figures
 
-all: figures
+all: figures pdf
+
+pdf:
 	@$(MAKE) --no-print-directory clean
 	@$(MAKE) --no-print-directory compile || true # Prevent make from stopping during the first compilation
 	@$(MAKE) --no-print-directory bcompile

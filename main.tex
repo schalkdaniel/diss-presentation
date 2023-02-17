@@ -224,15 +224,44 @@
 \begin{frame}{Gradient boosting}
   \begin{itemize}
     \item
-      Introduce pseudo residuals etc.
+      Aim is to fit a model $\fh$ by conducting functional gradient descent $\fmdh = \fmh + \nu \hat{b}^{[m]}$.
+
+    \item
+      $\hat{b}$ is a base learner fitted to pseudo residuals $\rmi = -\left.\pd{\Lxyi}{f(\xi)}\right|_{f = \fmdh}$, $i \in \{1, \dots, n\}$
+
+    \item
+      The pseudo residuals contain information in which direction to move $\fmh$ for a better fit to the training data $\D$.
+
+    \item
+      The fitting is initialized with $\fh^{[0]}(\xv) = \argmin_{c\in\mathcal{Y}}\riske(c|\D)$ and repeated $M$ times or until an early stopping criterion is met.
   \end{itemize}
 \end{frame}
 
 \begin{frame}{Component-wise gradient boosting -- Basics}
   \begin{itemize}
     \item
-      Introduce base learners etc.
+      Compared to GB, component-wise gradient boosting (CWB) can choose from a set of $K$ base learners $b \in \{b_1, \dots, b_K\}$.
+
+    \item
+      Often, $b_1, \dots, b_K$ are chosen to be (interpretable) statistical models and hence $f$ corresponds to a generalized additive model $f(\xv) = f_0 + \sum_{k=1}^K b_k(\xv)$ with intercept $\f_0$.
+
+    \item
+      Advantages of CWB:
+      \begin{itemize}
+        \item
+          Feasible to get fit in high-dimensional feature spaces ($p \gg n$).
+
+        \item
+          An inherent (unbiased) feature selection.
+
+        \item
+          Interpretable/explainable partial feature effects (depending on the choice of base learners).
+      \end{itemize}
   \end{itemize}
+\end{frame}
+
+\begin{frame}{Component-wise gradient boosting -- Base learner}
+  Closer look at base learners, design matrix, fitting etc.
 \end{frame}
 
 \begin{frame}{Component-wise gradient boosting -- Algorithm}
@@ -263,7 +292,50 @@
   \end{algorithm}
 \end{frame}
 
+\begin{frame}{Component-wise gradient boosting – Example}
+  Example throughout this presentation is a subset of a WHO data set\footnote[frame,1]{Full description and data is available at \url{kaggle.com/datasets/kumarajarshi/life-expectancy-who}} about life expectation in years per country:
+
+  \begin{itemize}
+    \item
+      Target variable is \texttt{Life.expectancy} in years.
+    \item
+      Features are \texttt{Country}, \texttt{Year}, \texttt{Alcohol} recorded per capital (15+) consumption (in liters of pure alcohol), and \texttt{Adult.Mortality} rates of both sexes of dying between 15 and 60 years per 1000 population.
+
+    \item
+      Numerical features \texttt{Year}, \texttt{Alcohol} and \texttt{Adult.Mortality} are modeled as P-splines \citep{eilers1996flexible} and \texttt{Country} as one-hot-encoded linear model with ridge penalty.
+
+    %\item
+      %Define setup, iterations etc.
+  \end{itemize}
+\end{frame}
+
 \input{figures/fig-cwb-anim.tex}
+
+\begin{frame}{Part I - Efficiency}
+  Name paper here and what it solves
+  \begin{itemize}
+    \item
+      Memory consumption
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Part II - Interpretable ML Framework}
+  Name paper here and what it solves
+  \begin{itemize}
+    \item
+      Easy access etc.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Part III - Distributed Component-wise Boosting}
+  Name paper here and what it solves
+  \begin{itemize}
+    \item
+      Distributed etc.
+  \end{itemize}
+  Misc: Distributed Model evaluation, A few slides in the end that describes the issue (sometimes not feasible to just aggregate), how we solved it for the AUC, and what can be done in the future
+\end{frame}
+
 
 \section{Efficiency}
 
