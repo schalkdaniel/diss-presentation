@@ -36,4 +36,5 @@ bcompile:
 	$(BIBENGINE) "$(FILE).aux"
 
 figures:
-	Rscript rsrc/fig-cboost-animation.R
+	Rscript rsrc/fig-cboost-animation-new.R
+	Rscript rsrc/fig-base-learner.R

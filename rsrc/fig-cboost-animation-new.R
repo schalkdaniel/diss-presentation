@@ -6,12 +6,14 @@ library(patchwork)
 devtools::load_all("~/repos/compboost")
 
 REBUILD = TRUE
-FIGURES = FALSE
-ANIMATE = TRUE
+FIGURES = TRUE
+ANIMATE = FALSE
 ITER_MAX = 150L
 RM_OLD   = TRUE
+FIG_DIR  = "figures/cwb-anim"
 RESIZE   = 40
 
+## Data: https://www.kaggle.com/datasets/kumarajarshi/life-expectancy-who
 dat_raw = read.csv(here::here("data/who-life-expectancy-data.csv"))
 
 countries = c("Germany", "United States of America", "Sweden", "South Africa", "Ethiopia")
@@ -20,7 +22,7 @@ names(country_codes) = countries
 
 dat = dat_raw %>%
   filter(Country %in% countries) %>%
-  select("Country", "Year", "Life.expectancy", "Alcohol", "Adult.Mortality") %>%
+  select("Country", "Year", "Life.expectancy", "BMI", "Adult.Mortality") %>%
   mutate(Country = as.factor(country_codes[Country])) %>%
   na.omit()
 
@@ -34,6 +36,9 @@ if (ncol(dat) != 5) {
 }
 
 cboost = boostSplines(dat, target, learning_rate = 0.05, df = 4, df_cat = 3, iterations = ITER_MAX)#, loss = LossBinomial$new())
+#cboost = boostLinear(dat, target, learning_rate = 0.05, iterations = ITER_MAX)#, loss = LossBinomial$new())
+
+#plotBaselearnerTraces(cboost)
 #plotRisk(cboost)
 #getPlot(21)
 
@@ -126,6 +131,7 @@ getPlot = function(iter, add_points = FALSE, add_risk = FALSE, add_blpred = FALS
     cboost$train(iter)
     X = f$getData()
     P = as.numeric(f$getMeta()$penalty) * f$getMeta()$penalty_mat
+    if (nrow(X) > ncol(X)) X = t(X)
     blpred = t(X) %*% solve(X %*% t(X) + P) %*% X %*% prold
     dato$prold = prold
     dato$blpred = blpred
@@ -180,7 +186,8 @@ getPlot = function(iter, add_points = FALSE, add_risk = FALSE, add_blpred = FALS
 
     if (add_risk) {
       sse = sum((dato$prold - dato$blpred)^2)
-      gg = gg + ggtitle(bln, sprintf("SSE=%s", round(sse, 4)))#geom_text(aes(x = -Inf, y = Inf, label = sprintf("SSE=%s", round(sse, 4))), hjust = -0.2, vjust = 1.2)
+      blt = strsplit(bln, "_")[[1]][1]
+      gg = gg + ggtitle(blt, sprintf("SSE=%s", round(sse, 4)))#geom_text(aes(x = -Inf, y = Inf, label = sprintf("SSE=%s", round(sse, 4))), hjust = -0.2, vjust = 1.2)
     }
     if (bln == bltrace[iter]) {
       gg = gg +
@@ -218,18 +225,20 @@ getPlot = function(iter, add_points = FALSE, add_risk = FALSE, add_blpred = FALS
   return(gg)
 }
 
+if (! dir.exists(FIG_DIR)) dir.create(FIG_DIR)
+
 if (RM_OLD) {
-  fn = list.files(here::here("figures"), full.names = TRUE)
+  fn = list.files(FIG_DIR, full.names = TRUE)
   fn = fn[grep("fig-iter", fn)]
   invisible(file.remove(fn))
 }
 
 if (FIGURES) {
-  iters = c(1, 2, 5, 10, 15, 20, 21, 30, 50, 70, 85, 87, 90, 110, 140, 150)
+  iters = c(1, 2, 5, 10, 15, 17, 18, 20, 23, 24, 30, 50, 70, 88, 89, 90, 110, 130, 150)
   slt = character()
   for (i in iters) {
     gg = getPlot(i) & plot_annotation(theme = theme(plot.background = element_rect(fill = "white")))
-    fn = sprintf(here::here("figures/fig-iter-%s.png"), stringr::str_pad(i, 4, pad = 0))
+    fn = sprintf(paste0(FIG_DIR, "/fig-iter-%s.png"), stringr::str_pad(i, 4, pad = 0))
     suppressMessages(suppressWarnings(ggsave(plot = gg, filename = fn, width = 8, height = 6)))
 
     if (i == iters[1]) {
@@ -238,14 +247,14 @@ if (FIGURES) {
       pc = "\\addtocounter{framenumber}{-1}"
     }
     message(sprintf("Save figure %s", fn))
-    slt = c(slt, sprintf("\n\\begin{frame}{Component-wise gradient boosting -- Example}\n\t\\begin{figure}\n\t\t\\centering\n\t\t\\includegraphics[width=\\textwidth]{%s}\n\t\\end{figure}\n\t%s\n\\end{frame}\n", fn, pc))
-    writeLines(slt, con = here::here("figures/fig-cwb-anim.tex"))
+    slt = c(slt, sprintf("\n\\begin{frame}{Example: Life expectancy (nonlinear)}\n\t\\begin{figure}\n\t\t\\centering\n\t\t\\includegraphics[width=\\textwidth]{%s}\n\t\\end{figure}\n\t%s\n\\end{frame}\n", fn, pc))
+    writeLines(slt, con = "tex/fig-cwb-anim.tex")
   }
 }
 
+
 if (ANIMATE) {
-  #iters = seq_len(ITER_MAX)
-  iters = c(1, 10, 100)
+  iters = seq_len(ITER_MAX)
   slt = character()
   for (i in iters) {
     danim = "figures/animation"
@@ -253,11 +262,12 @@ if (ANIMATE) {
     fn = sprintf(here::here("%s/fig-iter-%s.png"), danim, stringr::str_pad(i, 4, pad = 0))
 
     if ((! file.exists(fn)) || REBUILD) {
+      #gg = suppressWarnings(getPlot(i)) & theme_minimal() & theme(plot.background = element_rect(fill = "white"))
       gg = getPlot(i) & plot_annotation(theme = theme(plot.background = element_rect(fill = "white")))
-      suppressWarnings(ggsave(plot = gg, filename = fn, width = 8, height = 5))
+      suppressMessages(suppressWarnings(ggsave(plot = gg, filename = fn, width = 8, height = 5)))
+      system(sprintf("convert -resize %s%% %s %s", RESIZE, fn, fn))
       message(sprintf("Save figure %s", fn))
-      system(sprintf("convert -resize %s% %s %s", RESIZE, fn, fn))
     }
   }
-  system(sprintf("convert -delay 10 -loop 0 %s/*.png %s/cboost.gif", danim, danim))
+  system(sprintf("convert -delay 15 -loop 0 %s/*.png %s/cboost.gif", danim, danim))
 }
