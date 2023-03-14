@@ -25,10 +25,11 @@ dat = dat_raw %>%
   mutate(Country = as.factor(country_codes[Country])) %>%
   na.omit()
 
+target = "Life.expectancy"
+
 #dat %>% group_by(Country) %>% summarize(mean(Life.expectancy))
 #tst = data.frame(Country = dat$Country, abb = country_codes[dat$Country])
 
-target = "Life.expectancy"
 
 ## Spline base learner:
 ## ===================================================================
@@ -73,9 +74,17 @@ dlab = Xbase %>%
   filter(y == max(y)) %>%
   mutate(vjust = ifelse(ystretch < 0, 1, 0))
 
+## Colors:
+vcols_raw = viridis::viridis(10)
+vcols = substr(vcols_raw, 2, 7)
+colorcode = data.frame(base = bvec, color = vcols_raw)
+
+Xbase = Xbase %>%
+  left_join(colorcode, by = "base")
+
 #plotBaselearner(cboost, "Adult.Mortality_spline") +
 gg_bs_add = ggplot() +
-  geom_line(data = Xbase, aes(x = x, y = y, color = base)) +
+  geom_line(data = Xbase, aes(x = x, y = y)) +
   geom_line(data = Xbase, aes(x = x, y = ystretch, color = base)) +
   geom_segment(data = dp, aes(x = x, xend = x, y = ycs0, yend = ycs, color = b),
     linewidth = 2) +
@@ -83,11 +92,9 @@ gg_bs_add = ggplot() +
   geom_line(data = dpred, aes(x = x, y = y)) +
   geom_point(data = dat, aes(x = Adult.Mortality, y = Life.expectancy - mean(Life.expectancy), alpha = 0.5)) +
   geom_rug(data = dat, aes(x = Adult.Mortality, y = 0)) +
-  viridis::scale_color_viridis(discrete = TRUE)
+  #viridis::scale_color_viridis(discrete = TRUE)
+  scale_color_manual(values = vcols_raw)
 
-## Colors:
-vcols_raw = viridis::viridis(10)
-vcols = substr(vcols_raw, 2, 7)
 
 ## Design matrix:
 Xdat = t(cboost$baselearner_list[[bln]]$factory$getData())
@@ -97,11 +104,15 @@ idxs = c(1, 59, 40, 70, 5, 10)
 dlab$label = sprintf("B[%s]", seq_len(nrow(dlab)))
 
 # Without label:
+Xbase$base = as.factor(Xbase$base)
+Xbase$base = factor(Xbase$base, levels = bvec)
 ggbs = ggplot() +
   geom_line(data = Xbase, aes(x = x, y = y, color = base), show.legend = FALSE, linewidth = 1.2) +
   geom_text(data = dlab, aes(x = x, y = y, label = label), parse = TRUE, vjust = -0.5) +
-  viridis::scale_color_viridis(discrete = TRUE) +
-  viridis::scale_fill_viridis(discrete = TRUE) +
+  #viridis::scale_color_viridis(discrete = TRUE) +
+  #viridis::scale_fill_viridis(discrete = TRUE) +
+  scale_color_manual(labels = bvec, values = vcols_raw) +
+  scale_fill_manual(values = vcols_raw) +
   xlab(xn) +
   ylab(eval(parse(text = sprintf("expression(B[k](%s))", xn)))) +
   ylim(0, 0.8) +
@@ -110,29 +121,39 @@ ggbs = ggplot() +
 
 ggsave(ggbs, filename = here::here(FIG_DIR_BS, "fig-bs0.png"), width = 7, height = 2.5)
 
-getBasePlot = function(i, save = TRUE) {
-  di = data.frame(bval = as.vector(Xdat[i,]), b = bvec, x = x[i], fill = vcols_raw) %>%
+getBasePlot = function(i, save = TRUE, ilab = NULL) {
+  if (is.null(ilab)) ilab = i
+  di = data.frame(bval = as.vector(Xdat[i,]), b = bvec, x = x[i], fill = vcols_raw, k = seq_along(bvec)) %>%
     filter(bval > 0.006) %>%
-    mutate(label = format(round(bval, 2), nsmall = 2))
+    mutate(label = format(round(bval, 2), nsmall = 2), alpha = 1) %>%
+    mutate(label_b = sprintf("B[%s](%s) == %s", k, sprintf("x^{(%s)}", ilab), label))
+
+  Xbase$alpha = 0.4
+  Xbase$alpha[Xbase$base %in% di$b] = 0.8
 
   dsegment = di %>% filter(bval == max(bval))
+  lhjust = -0.5
+  if (dsegment$x > 470) lhjust = 1.5
 
   gg = ggplot() +
-    geom_line(data = Xbase, aes(x = x, y = y, color = base), show.legend = FALSE, alpha = 0.7, linewidth = 1.2) +
+    geom_line(data = Xbase, aes(x = x, y = y, color = base, alpha = alpha), show.legend = FALSE, linewidth = 1.2) +
     geom_text(data = dlab, aes(x = x, y = y, label = label), parse = TRUE, vjust = -0.5) +
-    viridis::scale_color_viridis(discrete = TRUE) +
-    viridis::scale_fill_viridis(discrete = TRUE) +
+    #viridis::scale_color_viridis(discrete = TRUE) +
+    #viridis::scale_fill_viridis(discrete = TRUE) +
+    scale_color_manual(values = vcols_raw) +
+    scale_fill_manual(values = vcols_raw) +
     xlab(xn) +
     ylab(eval(parse(text = sprintf("expression(B[k](%s))", xn)))) +
     ylim(0, 0.8) +
     geom_segment(data = dsegment, aes(x = x, xend = x, y = 0, yend = bval)) +
     #geom_label(data = dsegment, aes(x = x, y = 0, label = paste("x = ", x)), vjust = -0.5, hjust = 1.5, fill = "black", color = "white", fontface = "bold") +
-    geom_label(data = dsegment, aes(x = x, y = 0, label = paste("x = ", x)), vjust = -0.5, fill = "black", color = "white", fontface = "bold") +
+    geom_label(data = dsegment, aes(x = x, y = 0, label = paste0(sprintf("x^{(%s)} == ", ilab), x)),
+      hjust = 0.5, fill = "black", color = "white", fontface = "bold", parse = TRUE) +
     geom_rug(data = dat, aes(x = Adult.Mortality, y = 0)) +
     geom_point(data = di, aes(x = x, y = bval, color = b), show.legend = FALSE,
       size = 6) +
-    geom_label(data = di, aes(x = x, y = bval, label = label), show.legend = FALSE,
-      hjust = -0.5, color = "white", fontface = "bold", fill = di$fill) +
+    geom_label(data = di, aes(x = x, y = bval, label = label_b), show.legend = FALSE,
+      hjust = lhjust, color = "white", fontface = "bold", fill = di$fill, parse = TRUE) +
     theme_minimal()
 
   if (save) {
@@ -142,8 +163,9 @@ getBasePlot = function(i, save = TRUE) {
   }
 }
 
-for (i in idxs) {
-  getBasePlot(i, save = TRUE)
+ilabs = c(1, 2, 3, 73, 74, 75)
+for (i in seq_along(idxs)) {
+  getBasePlot(idxs[i], save = TRUE, ilabs[i])
 }
 ## Build design:
 
@@ -176,7 +198,7 @@ pasteBlock = function(idxs, add_colors = TRUE, dots_after = NA, empty_after = NA
   algs = paste(rep("c", length(vcols)), collapse = "")
   hn = paste(sprintf("\\color[HTML]{%s}B_{%s}", vcols, seq_along(vcols)), collapse = " & ")
   header = sprintf("\\begin{blockarray}{%s}\n%s \\\\", algs, hn)
-  blockstart = sprintf("\\begin{block}{(%s)}", algs)
+  blockstart = sprintf("\\begin{block}{(%s)}\n\\phantom{x}\\\\", algs)
   blockend = "\\end{blockarray}"
   lines = c(header, blockstart)
   lines_middle = c()
@@ -193,22 +215,25 @@ pasteBlock = function(idxs, add_colors = TRUE, dots_after = NA, empty_after = NA
   }
   ladd = 0
   if (empty_after >= dots_after) ladd = 1
-  lend = character(length(lines_middle))
-  lend[-unique(length(lines_middle))] = "\\\\\n  "
+  lend = rep("\\\\\n  ", length(lines_middle))
+  lend[length(lend)] = paste0(lend[length(lend)], "\n\\phantom{x}")
+  #lend = character(length(lines_middle))
+  #lend[-unique(length(lines_middle))] = "\\\\\n  "
   lines_middle = paste0(lines_middle, lend)
   lines_middle = append(lines_middle, "\n\\end{block}\n", after = empty_after + ladd)
   lines_middle = paste(lines_middle, collapse = "")
-  paste0(paste(c(paste0("\\scriptsize\n$$\n\\design_k = ", header), blockstart, lines_middle, blockend), collapse = "\n"), "\n$$\n\\normalsize")
+  paste0(paste(c(paste0("\n\\[\n\\design_k = \\tiny", header), blockstart, lines_middle, blockend), collapse = "\n"), "\n\\]\n\\normalsize")
 }
 
 template = "
-\\begin{frame}{Component-wise gradient boosting -- Base learner examples I}
-  \\textbf{P-spline base learner} $g_k(x) = (B_{k,1}(x), \\dots, B_{k,d_k}(x))^\\tran$ with $B$ a B-spline basis of a pre-defined degree~\\citep{eilers1996flexible}.
+\\begin{frame}{B/P-spline base learner}
+  \\vspace{-0.3cm}\\[g_k(x) = (B_{k,1}(x), \\dots, B_{k,d_k}(x))^\\tran\\] B-spline basis $B$ of a pre-defined degree~\\citep{eilers1996flexible}.
   \\begin{center}
     \\begin{figure}
       \\includegraphics[width=0.7\\textwidth]{%s/fig-bs%s.png}
     \\end{figure}
   \\end{center}
+  \\vspace{-0.3cm}
   \\input{tex/tex-bmat%s.tex}
   %s
 \\end{frame}
@@ -300,3 +325,49 @@ for (i in seq_along(idx)) {
 
 ## Tensor base learner:
 ## ===================================================================
+
+dat = dat_raw %>%
+  filter(Country %in% countries) %>%
+  select(Country, BMI, Alcohol, Life.expectancy) %>%
+  mutate(Country = as.factor(country_codes[Country])) %>%
+  na.omit()
+
+cboost = Compboost$new(dat, target, optimizer = OptimizerCoordinateDescent$new(4),
+  learning_rate = 0.2)
+cboost$addTensor("Country", "BMI", df1 = 5, df2 = 3)
+cboost$addTensor("BMI", "Alcohol", df = 4)
+cboost$train(500)
+
+tab = names(table(cboost$getSelectedBaselearner()))
+tab
+
+library(patchwork)
+
+gg1 = plotTensor(cboost, tab[1])
+gg2 = plotTensor(cboost, tab[2])
+
+vcols_raw = ggsci::pal_aaas()(length(country_codes))
+colorcode = data.frame(base = sort(country_codes), color = vcols_raw)
+
+tmp = lapply(country_codes, function(cc) {
+  dtmp = gg2$data %>% filter(Country == cc)
+  clr = colorcode$color[colorcode$base == cc]
+  yl = sprintf("expression(b[\"l, %s\"])", cc)
+  gg = ggplot(dtmp, aes(x = BMI, y = y)) +
+    geom_line(color = clr, linewidth = 1.2) +
+    ggtitle(cc) +
+    ylim(range(gg2$data$y)) +
+    ylab(eval(parse(text = yl))) +
+    theme_minimal() +
+    theme(plot.title = element_text(color = clr, face = "bold"))
+  ggsave(gg, filename = here::here("figures/bs-tensor", sprintf("fig-tensor-%s.png", cc)),
+    width = 2, height = 1.4)
+})
+
+
+gg1 = plotTensor(cboost, tab[1]) + theme_minimal() + theme(legend.position = "bottom") +
+  ylab("Alcohol") + theme(legend.text = element_text(size = 6), legend.key.size = unit(0.4,"line"))
+ggsave(gg1, filename = here::here("figures/bs-tensor/fig-num-num.png"), width = 4, height = 2)
+
+gg2 = plotTensor(cboost, tab[2]) + theme_minimal() + ggsci::scale_color_aaas() + ylab(expression(b[l]))
+ggsave(gg2, filename = here::here("figures/bs-tensor/fig-cat-num.png"), width = 4, height = 2)

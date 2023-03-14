@@ -247,7 +247,7 @@ if (FIGURES) {
       pc = "\\addtocounter{framenumber}{-1}"
     }
     message(sprintf("Save figure %s", fn))
-    slt = c(slt, sprintf("\n\\begin{frame}{Example: Life expectancy (nonlinear)}\n\t\\begin{figure}\n\t\t\\centering\n\t\t\\includegraphics[width=\\textwidth]{%s}\n\t\\end{figure}\n\t%s\n\\end{frame}\n", fn, pc))
+    slt = c(slt, sprintf("\n\\begin{frame}{Fitting process: Life expectancy}\n\t\\begin{figure}\n\t\t\\centering\n\t\t\\includegraphics[width=\\textwidth]{%s}\n\t\\end{figure}\n\t%s\n\\end{frame}\n", fn, pc))
     writeLines(slt, con = "tex/fig-cwb-anim.tex")
   }
 }

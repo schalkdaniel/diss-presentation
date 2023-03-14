@@ -1,4 +1,4 @@
-\documentclass[10pt]{beamer}
+\documentclass[t,10pt]{beamer}
 
 \usepackage{natbib}
 \bibliographystyle{apalike}
@@ -51,9 +51,46 @@
 \usepackage{transparent}
 \usepackage{blkarray}
 \usepackage{bibentry}
+\usepackage{mathdots}
+
+%%% KABLE HEADER:
+\usepackage{booktabs}
+\usepackage{wrapfig}
+\usepackage{colortbl}
+\usepackage{pdflscape}
+\usepackage{tabu}
+\usepackage{threeparttable}
+\usepackage{threeparttablex}
+\usepackage[normalem]{ulem}
+\usepackage{makecell}
+
+\usepackage{tikz}
+%\usetikzlibrary{calc}
+\usetikzlibrary{fit,calc}
+
+\definecolor{olivedrab}{RGB}{154,205,50}
+\newcommand*{\tikzmk}[1]{\tikz[remember picture,overlay,] \node (#1) {};\ignorespaces}
+
+\newcommand{\boxtrans}{\tikz[remember picture,overlay]{\node[yshift=3pt,fill=white,opacity=.7,fit={($(A)+(-0.5,0.35\baselineskip)$)($(B)+(0.5\linewidth,-1.03\baselineskip)$)}] {};}\ignorespaces}
+
+\newcommand{\boxit}[1]{\tikz[remember picture,overlay]{\node[yshift=3pt,fill=#1,opacity=.25,fit={($(A)+(-0.5,0.1\baselineskip)$)($(B)+(0.35\linewidth,-0.5\baselineskip)$)}] {};}\ignorespaces}
+\newcommand{\boxittwo}[1]{\tikz[remember picture,overlay]{\node[yshift=3pt,fill=#1,opacity=.25,fit={($(A)+(-0.35,0.3\baselineskip)$)($(B)+(0.35\linewidth,-0.5\baselineskip)$)}] {};}\ignorespaces}
+
 
 %\renewcommand\topstrut[1][1.2ex]{\setlength\bigstrutjot{#1}{\bigstrut[t]}}
 %\renewcommand\botstrut[1][0.9ex]{\setlength\bigstrutjot{#1}{\bigstrut[b]}}
+\newcommand{\todo}{{\color{red}\textbf{TODO:}}\hspace{0.1cm}}
+\newcommand{\penMat}{\bm{K}}
+\newcommand{\idMat}{\bm{I}}
+
+\newcommand{\fSlide}[2]{
+\begin{frame}[plain]{}%
+  \vspace{4cm}%
+  \Large #1\\[0.2cm]%
+  {\LARGE\textbf{#2}}%
+	\addtocounter{framenumber}{-1}%
+\end{frame}%
+}
 
 
 %% For speaker notes:
@@ -134,6 +171,10 @@
   \hspace*{-\paperwidth}
 }
 
+
+
+
+
 %% Shaded for nicer code highlighting:
 %% ---------------------------------------------------------------
 
@@ -169,7 +210,7 @@
 \date{March 24, 2023}
 \author{\textbf{Daniel Schalk}}
 \institute{\textbf{Supervisor:} Prof. Dr. Bernd Bischl\\
-\textbf{Referees:} Prof. Dr. Matthias Schmid, PD Dr. Fabian Scheipl\\
+\textbf{Reviewers:} Prof. Dr. Matthias Schmid, PD Dr. Fabian Scheipl\\
 \textbf{Chair of the examination panel:} Prof. Dr. Christian Heumann}
 \titlegraphic{
     \vspace{3cm}\hspace{5.4cm}\transparent{0.1}\includegraphics[height=8.5cm]{figures/LMU.png}
@@ -186,92 +227,123 @@
 \newcommand{\newblockold}{\newblock}
 \newcommand{\newblocknew}{\hspace{0.1cm}\footnotesize}
 
-\section*{Overview}
+\section*{About the dissertation}
 
-\begin{frame}{Summary}
-
+\begin{frame}{Overview}
+  \textbf{Focus of the dissertation:}
   \begin{itemize}
-    \item
-      Focus of the dissertation is to discuss and propose new and modern directions for component-wise gradient boosting \citep[CWB;][]{buhlmann2003boosting}.
-
-    \item
-      bla
-
+    \item[] Discuss and propose new and modern directions for component-wise gradient boosting \citep[CWB;][]{buhlmann2003boosting}.
   \end{itemize}
-
+  \textbf{Contribution and topics:}
+  \vspace{-0.2cm}
+  \begin{figure}
+    \centering
+    \includegraphics[width=0.55\textwidth]{figures/topics.png}
+  \end{figure}
 \end{frame}
 
 \begin{frame}{Part I - Efficiency}
-  \textbf{Goal:}
-  \begin{itemize}
-    \item
-      Increase CWB's efficiency:
-      \begin{itemize}
-        \item \textbf{Acceleration:} Speed up the fitting process by using Nesterovs momentum.
-        \item \textbf{Memory:} Reduce the memory consumption by discretizing numerical features.
-      \end{itemize}
-  \end{itemize}
+  \tikz[remember picture, overlay] \node[anchor=center] at ($(current page.center)-(-5,-2.5)$) {\includegraphics[width=0.3\textwidth]{figures/topics-cwb.png}};
+  \begin{minipage}[t]{0.8\linewidth}
+    \textbf{Goal:} Increase CWB's efficiency
+    \begin{itemize}
+      \item \textbf{Acceleration:} Speed up the fitting process by using Nesterovs momentum.
+      \item \textbf{Memory:} Reduce the memory consumption by discretizing numerical features.
+    \end{itemize}
+  \end{minipage}
+  \vspace{0.3cm}
 
   \textbf{Publications:}
   \renewcommand{\newblock}{\newblocknew}
   \begin{itemize}
-    \item {\footnotesize\bibentry{schalk2018compboost}}
-    \item {\footnotesize\bibentry{schalk2022accelerated}}
+    \item[{[}1{]}] {\footnotesize\bibentry{schalk2018compboost}}
+    \item[{[}2{]}] {\footnotesize\bibentry{schalk2022accelerated}}
   \end{itemize}
   \renewcommand{\newblock}{\newblockold}
 \end{frame}
 
 \begin{frame}{Part II - Interpretable AutoML Framework}
-  \textbf{Goal:}
-  \begin{itemize}
-    \item
-      Easy access to an interpretable AutoML framework based on CWB as fitting engine
-  \end{itemize}
-
+  \tikz[remember picture, overlay] \node[anchor=center] at ($(current page.center)-(-5,-2.5)$) {\includegraphics[width=0.3\textwidth]{figures/topics-autocwb.png}};
+  \begin{minipage}[t]{0.8\linewidth}
+    \textbf{Goal:}
+    \begin{itemize}
+      \item
+        Easy access to an interpretable AutoML framework based on CWB as fitting engine.
+      \item
+        Focus is the assessment of the required complexity to model a given task.
+    \end{itemize}
+  \end{minipage}
+  \vspace{0.3cm}
 
   \textbf{Publication:}
   \renewcommand{\newblock}{\newblocknew}
   \begin{itemize}
-    \item {\footnotesize\bibentry{coors2021autocompboost}}
+    \item[{[}3{]}] {\footnotesize\bibentry{coors2021autocompboost}}
   \end{itemize}
   \renewcommand{\newblock}{\newblockold}
 \end{frame}
 
 \begin{frame}{Part III - Distributed Computing}
-  \textbf{Goal:}
-  \begin{itemize}
-    \item
-      Distributed and privacy-preserving computation of CWB
-  \end{itemize}
-
+  \tikz[remember picture, overlay] \node[anchor=center] at ($(current page.center)-(-5,-2.5)$) {\includegraphics[width=0.3\textwidth]{figures/topics-dcwb.png}};
+  \begin{minipage}[t]{0.8\linewidth}
+    \textbf{Goal:}
+    \begin{itemize}
+      \item
+        Distributed and privacy-preserving computation of CWB.
+      \item
+        Estimation of common shared effects and site-specific effect corrections.
+    \end{itemize}
+  \end{minipage}
+  \vspace{0.3cm}
 
   \textbf{Publications:}
   \renewcommand{\newblock}{\newblocknew}
   \begin{itemize}
-    \item {\footnotesize\bibentry{schalk2022distcwb}}
+    \item[{[}4{]}] {\footnotesize\bibentry{schalk2022distcwb}. [Currently under review in the journal \textit{Statistics and Computing}]}
   \end{itemize}
   \renewcommand{\newblock}{\newblockold}
 
 \end{frame}
 
 \begin{frame}{Part III - Distributed Computing}
+  \tikz[remember picture, overlay] \node[anchor=center] at ($(current page.center)-(-5,-2.5)$) {\includegraphics[width=0.3\textwidth]{figures/topics-dauc.png}};
+  \begin{minipage}[t]{0.8\linewidth}
   \textbf{Goal:}
-  \begin{itemize}
-    \item
-      Methodology and implementation of a distributed and privacy-preserving ROC analysis
-  \end{itemize}
+    \begin{itemize}
+      \item
+        Methodology and implementation of a distributed and privacy-preserving ROC analysis.
+    \end{itemize}
+  \end{minipage}
+  \vspace{0.3cm}
 
   \textbf{Publications:}
   \renewcommand{\newblock}{\newblocknew}
   \begin{itemize}
-    \item {\footnotesize\bibentry{schalk2022dauc}}
-    \item {\footnotesize\bibentry{schalk2022dsBinVal}}
+    \item[{[}5{]}] {\footnotesize\bibentry{schalk2022dauc} [Currently under review in the journal \textit{BMC Medical Research Methodology}]}
+    \item[{[}6{]}] {\footnotesize\bibentry{schalk2022dsBinVal}}
   \end{itemize}
   \renewcommand{\newblock}{\newblockold}
 
-  The focus of this presentation is on CWB adjustments. The problem and our proposed solutions with respect to distributed model evaluation will be briefly summarized.
 \end{frame}
 
+\begin{frame}{Overview}
+  \textbf{Contribution and topics:}
+  \begin{figure}
+    \centering
+    \includegraphics[width=0.55\textwidth]{figures/topics.png}
+  \end{figure}\vspace{-0.2cm}
+  The focus of this presentation is on CWB adjustments {[}1{]}, {[}2{]}, and {[}4{]}. The other contributions are briefly summarized at the end of the presentation.
+\end{frame}
+
+\begin{frame}{Overview}
+  \textbf{Contribution and topics:}
+  \begin{figure}
+    \centering
+    \includegraphics[width=0.55\textwidth]{figures/topics-relevant.png}
+  \end{figure}\vspace{-0.2cm}
+  The focus of this presentation is on CWB adjustments {[}1{]}, {[}2{]}, and {[}4{]}. The other contributions are briefly summarized at the end of the presentation.
+	\addtocounter{framenumber}{-1}
+\end{frame}
 
 
 \begin{frame}{Structure of the talk}
@@ -279,7 +351,10 @@
 \end{frame}
 
 \section{Background}
-\subsection{S1}
+
+\begin{frame}{History of component-wise boosting}
+
+\end{frame}
 
 \begin{frame}{Terminology}
   \begin{itemize}
@@ -355,13 +430,13 @@
 \begin{frame}{Component-wise gradient boosting -- Basics}
   \begin{itemize}
     \item
-      Compared to GB, component-wise gradient boosting (CWB) can choose from a set of $K$ base learners $b \in \{b_1, \dots, b_K\}$.
+      Compared to GB, CWB can choose from a set of $K$ base learners $b \in \{b_1, \dots, b_K\}$.
 
     \item
       The learning rate $\nu$ is fixed and not optimized by a line search.
 
     \item
-      Often, $b_1, \dots, b_K$ are chosen to be (interpretable) statistical models and hence $f$ corresponds to a generalized additive model $f(\xv) = f_0 + \sum_{k=1}^K b_k(\xv)$ with intercept $f_0$.
+      Often, $b_1, \dots, b_K$ are chosen to be (interpretable) statistical models and hence $f$ corresponds to a generalized additive model~\citep[GAM;][]{hastie2017generalized}: \[f(\xv) = f_0 + \sum_{k=1}^K b_k(\xv), \ \ \text{intercept}\ f_0\]
 
     \item
       Advantages of CWB:
@@ -401,7 +476,6 @@
   \end{itemize}
 \end{frame}
 
-
 \begin{frame}{Component-wise gradient boosting -- Algorithm}
 
   \begin{algorithm}[H]
@@ -414,16 +488,17 @@
   \hrule
   \begin{algorithmic}[1]
   \Procedure{$\operatorname{CWB}$}{$\D,\nu,M,L,b_1, \dots, b_\blK$}
-      \State Initialize: $f_0 = \fh^{[0]}(\xv) = \argmin_{c\in\mathcal{Y}}\riske(c|\D)$
+      \State \tikzmk{A}Initialize: $f_0 = \fh^{[0]}(\xv) = \argmin_{c\in\mathcal{Y}}\riske(c|\D)$
       \While{$m \leq M$}
-          \State $\rmi = -\left.\pd{\Lxyi}{f(\xi)}\right|_{f = \fmdh},\ \ \forall i \in \{1, \dots, n\}$
-          \color{red}
-          \For{$\color{red}\blk \in \{1, \dots, \blK\}$}
-              \State $\color{red}\tbmh_\blk = \left(\design_\blk^\tran \design_\blk + \bm{K}_\blk\right)^{-1} \design^\tran_\blk \rmm$
-              \State $\color{red}\sse_\blk = \sum_{i=1}^n(\rmi - b_\blk(\xi | \tbmh_\blk))^2$
+          \State $\rmi = -\left.\pd{\Lxyi}{f(\xi)}\right|_{f = \fmdh},\ \ \forall i \in \{1, \dots, n\}$\tikzmk{B}\boxtrans
+          \For{\tikzmk{A}$\blk \in \{1, \dots, \blK\}$}
+              \State $\tbmh_\blk = \left(\design_\blk^\tran \design_\blk + \bm{K}_\blk\right)^{-1} \design^\tran_\blk \rmm$
+              \State $\sse_\blk = \sum_{i=1}^n(\rmi - b_\blk(\xi | \tbmh_\blk))^2$
           \EndFor
-          \State $\color{red}\blk^{[m]} = \argmin_{\blk\in\{1, \dots, \blK\}} \sse_\blk$
-          \State $\fmh(\xv) = \fmdh(\xv) + \nu b_{\blk^{[m]}} (\xv | \tbmh_{\blk^{[m]}})$
+          \State $\blk^{[m]} = \argmin_{\blk\in\{1, \dots, \blK\}} \sse_\blk$
+          \tikzmk{B}
+          \boxit{olivedrab}
+          \State \tikzmk{A}$\fmh(\xv) = \fmdh(\xv) + \nu b_{\blk^{[m]}} (\xv | \tbmh_{\blk^{[m]}})$\tikzmk{B}\boxtrans
       \EndWhile
       \State \textbf{return} $\fh = \fh^{[M]}$
   \EndProcedure
@@ -431,6 +506,15 @@
   \end{algorithm}
 \end{frame}
 
+
+\begin{frame}{Component-wise gradient boosting – Example}
+  Example throughout this presentation is a subset of a WHO data set\footnote[frame,1]{Full description and data is available at \url{kaggle.com/datasets/kumarajarshi/life-expectancy-who}} about life expectation in years per country:
+
+  \scriptsize
+  \input{tex/tab-example}
+  \normalsize
+
+\end{frame}
 
 \begin{frame}{Component-wise gradient boosting – Example}
   Example throughout this presentation is a subset of a WHO data set\footnote[frame,1]{Full description and data is available at \url{kaggle.com/datasets/kumarajarshi/life-expectancy-who}} about life expectation in years per country:
@@ -449,15 +533,16 @@
   \end{itemize}
 \end{frame}
 
-\begin{frame}{Component-wise gradient boosting -- Base learner examples I}
-  \textbf{P-spline base learner} $g_k(x) = (B_{k,1}(x), \dots, B_{k,d_k}(x))^\tran$ with $B$ a B-spline basis of a pre-defined degree~\citep{eilers1996flexible}.
+\fSlide{Component-wise gradient boosting}{Base learner}
 
+\begin{frame}{B/P-Spline base learner}
+  \vspace{-0.3cm}\[g_k(x) = (B_{k,1}(x), \dots, B_{k,d_k}(x))^\tran\] B-spline basis $B$ of a pre-defined degree~\citep{eilers1996flexible}.
   \begin{center}
     \begin{figure}
       \includegraphics[width=0.7\textwidth]{figures/bs-base/fig-bs0.png}
     \end{figure}
-
-    $$
+    \vspace{-0.3cm}
+    \[
     \design_k = \left(\begin{array}{c}
       g_{k}^\tran(\xi[1]) \\
       \vdots \\
@@ -467,22 +552,21 @@
       \vdots &  & \vdots \\
       B_{k,1}(\xi[n]) & \dots & B_{k,d_k}(\xi[n])
     \end{array}\right)\in\R^{n\times d_k}
-    $$
+    \]
   \end{center}
 
 \end{frame}
 
 \input{tex/tex-bmat-anim.tex}
 
-\begin{frame}{Component-wise gradient boosting -- Base learner examples II}
-  \textbf{Categorical base learner} $g_k(x) = (g_{k,1}(x), \dots, g_{k,G}(x))^\tran = (\mathds{1}_{\{x = 1\}}, \dots, \mathds{1}_{\{x = G\}})^\tran$ with categorical $x\in\{1, \dots, G\}$.
-
+\begin{frame}{Categorical base learner}
+  \vspace{-0.3cm}\[g_k(x) = (g_{k,1}(x), \dots, g_{k,G}(x))^\tran = (\mathds{1}_{\{x = 1\}}, \dots, \mathds{1}_{\{x = G\}})^\tran, \ \ x\in\{1, \dots, G\}\]
   \begin{center}
     \begin{figure}
       \includegraphics[width=0.7\textwidth]{figures/bs-cat/fig-cat0.png}
     \end{figure}
     \vspace{-0.5cm}
-    $$
+    \[
     \design_k = \left(\begin{array}{c}
       g_{k}^\tran(\xi[1]) \\
       \vdots \\
@@ -492,171 +576,176 @@
       \vdots &  & \vdots \\
       \mathds{1}_{\{\xi[n] = 1\}} & \dots & \mathds{1}_{\{\xi[n] = G\}} \\
     \end{array}\right)\in\R^{n\times G}
-    $$
+    \]
   \end{center}
 
 \end{frame}
 
-\begin{frame}{Component-wise gradient boosting -- Base learner examples II}
-  \textbf{Categorical base learner} $g_k(x) = (g_{k,1}(x), \dots, g_{k,G}(x))^\tran = (\mathds{1}_{\{x = 1\}}, \dots, \mathds{1}_{\{x = G\}})^\tran$ with categorical $x\in\{1, \dots, G\}$.
-
+\begin{frame}{Categorical base learner}
+  \vspace{-0.3cm}\[g_k(x) = (g_{k,1}(x), \dots, g_{k,G}(x))^\tran = (\mathds{1}_{\{x = 1\}}, \dots, \mathds{1}_{\{x = G\}})^\tran, \ \ x\in\{1, \dots, G\}\]
   \begin{center}
     \begin{figure}
       \includegraphics[width=0.7\textwidth]{figures/bs-cat/fig-cat1.png}
     \end{figure}
     \vspace{-0.5cm}
-    \scriptsize
-    $$
-      \design_k = \begin{blockarray}{ccccc}
+    \[
+      \design_k = \tiny\begin{blockarray}{ccccc}
         \color[HTML]{EE0000}g_{k,GER} & \color[HTML]{631879}g_{k,USA} & \color[HTML]{008B45}g_{k,SWE} & \color[HTML]{008280}g_{k,ZAF} & \color[HTML]{3B4992}g_{k,ETH}\\
       \begin{block}{(ccccc)}
+        \phantom{x}\\
         \color{lightgray}0 & \color[HTML]{631879}\bm{1} & \color{lightgray}0 & \color{lightgray}0 & \color{lightgray}0 \\
-      \color{white}0 & \color{white}0 & \color{white}0 & \color{white}0 & \color{white}0 \\
-      \color{white}0 & \color{white}0 & \color{white}0 & \color{white}0 & \color{white}0 \\
-      \color{white}\vdots & \color{white}\vdots & \color{white}\vdots & \color{white}\vdots & \color{white}\vdots \\
-      \color{white}0 & \color{white}0 & \color{white}0 & \color{white}0 & \color{white}0 \\
-      \color{white}0 & \color{white}0 & \color{white}0 & \color{white}0 & \color{white}0 \\
-      \color{white}0 & \color{white}0 & \color{white}0 & \color{white}0 & \color{white}0 \color{black}\\
+        \color{white}0 & \color{white}0 & \color{white}0 & \color{white}0 & \color{white}0 \\
+        \color{white}0 & \color{white}0 & \color{white}0 & \color{white}0 & \color{white}0 \\
+        \color{white}\vdots & \color{white}\vdots & \color{white}\vdots & \color{white}\vdots & \color{white}\vdots \\
+        \color{white}0 & \color{white}0 & \color{white}0 & \color{white}0 & \color{white}0 \\
+        \color{white}0 & \color{white}0 & \color{white}0 & \color{white}0 & \color{white}0 \\
+        \color{white}0 & \color{white}0 & \color{white}0 & \color{white}0 & \color{white}0 \color{black}\\
+        \phantom{x}
       \end{block}
     \end{blockarray}
-    $$
+    \]
     \normalsize
   \end{center}
 \end{frame}
 
-\begin{frame}{Component-wise gradient boosting -- Base learner examples II}
-  \textbf{Categorical base learner} $g_k(x) = (g_{k,1}(x), \dots, g_{k,G}(x))^\tran = (\mathds{1}_{\{x = 1\}}, \dots, \mathds{1}_{\{x = G\}})^\tran$ with categorical $x\in\{1, \dots, G\}$.
-
+\begin{frame}{Categorical base learner}
+  \vspace{-0.3cm}\[g_k(x) = (g_{k,1}(x), \dots, g_{k,G}(x))^\tran = (\mathds{1}_{\{x = 1\}}, \dots, \mathds{1}_{\{x = G\}})^\tran, \ \ x\in\{1, \dots, G\}\]
   \begin{center}
     \begin{figure}
       \includegraphics[width=0.7\textwidth]{figures/bs-cat/fig-cat2.png}
     \end{figure}
     \vspace{-0.5cm}
-    \scriptsize
-    $$
-      \design_k = \begin{blockarray}{ccccc}
+    \[
+      \design_k = \tiny\begin{blockarray}{ccccc}
         \color[HTML]{EE0000}g_{k,GER} & \color[HTML]{631879}g_{k,USA} & \color[HTML]{008B45}g_{k,SWE} & \color[HTML]{008280}g_{k,ZAF} & \color[HTML]{3B4992}g_{k,ETH}\\
       \begin{block}{(ccccc)}
+        \phantom{x}\\
         \color{lightgray}0 & \color{black}\bm{1} & \color{lightgray}0 & \color{lightgray}0 & \color{lightgray}0 \\
-      \color{lightgray}0 & \color{lightgray}0 & \color{lightgray}0 & \color{lightgray}0 & \color[HTML]{3B4992}\bm{1} \\
-      \color{white}0 & \color{white}0 & \color{white}0 & \color{white}0 & \color{white}0 \\
-      \color{white}\vdots & \color{white}\vdots & \color{white}\vdots & \color{white}\vdots & \color{white}\vdots \\
-      \color{white}0 & \color{white}0 & \color{white}0 & \color{white}0 & \color{white}0 \\
-      \color{white}0 & \color{white}0 & \color{white}0 & \color{white}0 & \color{white}0 \\
-      \color{white}0 & \color{white}0 & \color{white}0 & \color{white}0 & \color{white}0 \color{black}\\
+        \color{lightgray}0 & \color{lightgray}0 & \color{lightgray}0 & \color{lightgray}0 & \color[HTML]{3B4992}\bm{1} \\
+        \color{white}0 & \color{white}0 & \color{white}0 & \color{white}0 & \color{white}0 \\
+        \color{white}\vdots & \color{white}\vdots & \color{white}\vdots & \color{white}\vdots & \color{white}\vdots \\
+        \color{white}0 & \color{white}0 & \color{white}0 & \color{white}0 & \color{white}0 \\
+        \color{white}0 & \color{white}0 & \color{white}0 & \color{white}0 & \color{white}0 \\
+        \color{white}0 & \color{white}0 & \color{white}0 & \color{white}0 & \color{white}0 \color{black}\\
+        \phantom{x}
       \end{block}
     \end{blockarray}
-    $$
+    \]
     \normalsize
   \end{center}
+  \addtocounter{framenumber}{-1}
 \end{frame}
 
-\begin{frame}{Component-wise gradient boosting -- Base learner examples II}
-  \textbf{Categorical base learner} $g_k(x) = (g_{k,1}(x), \dots, g_{k,G}(x))^\tran = (\mathds{1}_{\{x = 1\}}, \dots, \mathds{1}_{\{x = G\}})^\tran$ with categorical $x\in\{1, \dots, G\}$.
-
+\begin{frame}{Categorical base learner}
+  \vspace{-0.3cm}\[g_k(x) = (g_{k,1}(x), \dots, g_{k,G}(x))^\tran = (\mathds{1}_{\{x = 1\}}, \dots, \mathds{1}_{\{x = G\}})^\tran, \ \ x\in\{1, \dots, G\}\]
   \begin{center}
     \begin{figure}
       \includegraphics[width=0.7\textwidth]{figures/bs-cat/fig-cat3.png}
     \end{figure}
     \vspace{-0.5cm}
-    \scriptsize
-    $$
-      \design_k = \begin{blockarray}{ccccc}
+    \[
+      \design_k = \tiny\begin{blockarray}{ccccc}
         \color[HTML]{EE0000}g_{k,GER} & \color[HTML]{631879}g_{k,USA} & \color[HTML]{008B45}g_{k,SWE} & \color[HTML]{008280}g_{k,ZAF} & \color[HTML]{3B4992}g_{k,ETH}\\
       \begin{block}{(ccccc)}
+        \phantom{x}\\
         \color{lightgray}0 & \color{black}\bm{1} & \color{lightgray}0 & \color{lightgray}0 & \color{lightgray}0 \\
-      \color{lightgray}0 & \color{lightgray}0 & \color{lightgray}0 & \color{lightgray}0 & \color{black}\bm{1} \\
-      \color[HTML]{EE0000}\bm{1} & \color{lightgray}0 & \color{lightgray}0 & \color{lightgray}0 & \color{lightgray}0 \\
-      \color{white}\vdots & \color{white}\vdots & \color{white}\vdots & \color{white}\vdots & \color{white}\vdots \\
-      \color{white}0 & \color{white}0 & \color{white}0 & \color{white}0 & \color{white}0 \\
-      \color{white}0 & \color{white}0 & \color{white}0 & \color{white}0 & \color{white}0 \\
-      \color{white}0 & \color{white}0 & \color{white}0 & \color{white}0 & \color{white}0 \color{black}\\
+        \color{lightgray}0 & \color{lightgray}0 & \color{lightgray}0 & \color{lightgray}0 & \color{black}\bm{1} \\
+        \color[HTML]{EE0000}\bm{1} & \color{lightgray}0 & \color{lightgray}0 & \color{lightgray}0 & \color{lightgray}0 \\
+        \color{white}\vdots & \color{white}\vdots & \color{white}\vdots & \color{white}\vdots & \color{white}\vdots \\
+        \color{white}0 & \color{white}0 & \color{white}0 & \color{white}0 & \color{white}0 \\
+        \color{white}0 & \color{white}0 & \color{white}0 & \color{white}0 & \color{white}0 \\
+        \color{white}0 & \color{white}0 & \color{white}0 & \color{white}0 & \color{white}0 \color{black}\\
+        \phantom{x}
       \end{block}
     \end{blockarray}
-    $$
+    \]
     \normalsize
   \end{center}
+  \addtocounter{framenumber}{-1}
 \end{frame}
 
-\begin{frame}{Component-wise gradient boosting -- Base learner examples II}
-  \textbf{Categorical base learner} $g_k(x) = (g_{k,1}(x), \dots, g_{k,G}(x))^\tran = (\mathds{1}_{\{x = 1\}}, \dots, \mathds{1}_{\{x = G\}})^\tran$ with categorical $x\in\{1, \dots, G\}$.
-
+\begin{frame}{Categorical base learner}
+  \vspace{-0.3cm}\[g_k(x) = (g_{k,1}(x), \dots, g_{k,G}(x))^\tran = (\mathds{1}_{\{x = 1\}}, \dots, \mathds{1}_{\{x = G\}})^\tran, \ \ x\in\{1, \dots, G\}\]
   \begin{center}
     \begin{figure}
       \includegraphics[width=0.7\textwidth]{figures/bs-cat/fig-cat4.png}
     \end{figure}
     \vspace{-0.5cm}
-    \scriptsize
-    $$
-      \design_k = \begin{blockarray}{ccccc}
+    \[
+      \design_k = \tiny\begin{blockarray}{ccccc}
         \color[HTML]{EE0000}g_{k,GER} & \color[HTML]{631879}g_{k,USA} & \color[HTML]{008B45}g_{k,SWE} & \color[HTML]{008280}g_{k,ZAF} & \color[HTML]{3B4992}g_{k,ETH}\\
       \begin{block}{(ccccc)}
+        \phantom{x}\\
         \color{lightgray}0 & \color{black}\bm{1} & \color{lightgray}0 & \color{lightgray}0 & \color{lightgray}0 \\
-      \color{lightgray}0 & \color{lightgray}0 & \color{lightgray}0 & \color{lightgray}0 & \color{black}\bm{1} \\
-      \color{black}\bm{1} & \color{lightgray}0 & \color{lightgray}0 & \color{lightgray}0 & \color{lightgray}0 \\
-      \color{lightgray}\vdots & \color{lightgray}\vdots & \color{lightgray}\vdots & \color{lightgray}\vdots & \color{lightgray}\vdots \\
-      \color{lightgray}0 & \color{lightgray}0 & \color[HTML]{008B45}\bm{1} & \color{lightgray}0 & \color{lightgray}0 \\
-      \color{white}0 & \color{white}0 & \color{white}0 & \color{white}0 & \color{white}0 \\
-      \color{white}0 & \color{white}0 & \color{white}0 & \color{white}0 & \color{white}0 \color{black}\\
+        \color{lightgray}0 & \color{lightgray}0 & \color{lightgray}0 & \color{lightgray}0 & \color{black}\bm{1} \\
+        \color{black}\bm{1} & \color{lightgray}0 & \color{lightgray}0 & \color{lightgray}0 & \color{lightgray}0 \\
+        \color{lightgray}\vdots & \color{lightgray}\vdots & \color{lightgray}\vdots & \color{lightgray}\vdots & \color{lightgray}\vdots \\
+        \color{lightgray}0 & \color{lightgray}0 & \color[HTML]{008B45}\bm{1} & \color{lightgray}0 & \color{lightgray}0 \\
+        \color{white}0 & \color{white}0 & \color{white}0 & \color{white}0 & \color{white}0 \\
+        \color{white}0 & \color{white}0 & \color{white}0 & \color{white}0 & \color{white}0 \color{black}\\
+        \phantom{x}
       \end{block}
     \end{blockarray}
-    $$
+    \]
     \normalsize
   \end{center}
+  \addtocounter{framenumber}{-1}
 \end{frame}
 
-\begin{frame}{Component-wise gradient boosting -- Base learner examples II}
-  \textbf{Categorical base learner} $g_k(x) = (g_{k,1}(x), \dots, g_{k,G}(x))^\tran = (\mathds{1}_{\{x = 1\}}, \dots, \mathds{1}_{\{x = G\}})^\tran$ with categorical $x\in\{1, \dots, G\}$.
-
+\begin{frame}{Categorical base learner}
+  \vspace{-0.3cm}\[g_k(x) = (g_{k,1}(x), \dots, g_{k,G}(x))^\tran = (\mathds{1}_{\{x = 1\}}, \dots, \mathds{1}_{\{x = G\}})^\tran, \ \ x\in\{1, \dots, G\}\]
   \begin{center}
     \begin{figure}
       \includegraphics[width=0.7\textwidth]{figures/bs-cat/fig-cat5.png}
     \end{figure}
     \vspace{-0.5cm}
-    \scriptsize
-    $$
-      \design_k = \begin{blockarray}{ccccc}
+    \[
+      \design_k = \tiny\begin{blockarray}{ccccc}
         \color[HTML]{EE0000}g_{k,GER} & \color[HTML]{631879}g_{k,USA} & \color[HTML]{008B45}g_{k,SWE} & \color[HTML]{008280}g_{k,ZAF} & \color[HTML]{3B4992}g_{k,ETH}\\
       \begin{block}{(ccccc)}
+        \phantom{x}\\
         \color{lightgray}0 & \color{black}\bm{1} & \color{lightgray}0 & \color{lightgray}0 & \color{lightgray}0 \\
-      \color{lightgray}0 & \color{lightgray}0 & \color{lightgray}0 & \color{lightgray}0 & \color{black}\bm{1} \\
-      \color{black}\bm{1} & \color{lightgray}0 & \color{lightgray}0 & \color{lightgray}0 & \color{lightgray}0 \\
-      \color{lightgray}\vdots & \color{lightgray}\vdots & \color{lightgray}\vdots & \color{lightgray}\vdots & \color{lightgray}\vdots \\
-      \color{lightgray}0 & \color{lightgray}0 & \color{black}\bm{1} & \color{lightgray}0 & \color{lightgray}0 \\
-      \color{lightgray}0 & \color{lightgray}0 & \color{lightgray}0 & \color[HTML]{008280}\bm{1} & \color{lightgray}0 \\
-      \color{white}0 & \color{white}0 & \color{white}0 & \color{white}0 & \color{white}0 \color{black}\\
+        \color{lightgray}0 & \color{lightgray}0 & \color{lightgray}0 & \color{lightgray}0 & \color{black}\bm{1} \\
+        \color{black}\bm{1} & \color{lightgray}0 & \color{lightgray}0 & \color{lightgray}0 & \color{lightgray}0 \\
+        \color{lightgray}\vdots & \color{lightgray}\vdots & \color{lightgray}\vdots & \color{lightgray}\vdots & \color{lightgray}\vdots \\
+        \color{lightgray}0 & \color{lightgray}0 & \color{black}\bm{1} & \color{lightgray}0 & \color{lightgray}0 \\
+        \color{lightgray}0 & \color{lightgray}0 & \color{lightgray}0 & \color[HTML]{008280}\bm{1} & \color{lightgray}0 \\
+        \color{white}0 & \color{white}0 & \color{white}0 & \color{white}0 & \color{white}0 \color{black}\\
+        \phantom{x}
       \end{block}
     \end{blockarray}
-    $$
+    \]
     \normalsize
   \end{center}
+  \addtocounter{framenumber}{-1}
 \end{frame}
 
-\begin{frame}{Component-wise gradient boosting -- Base learner examples II}
-  \textbf{Categorical base learner} $g_k(x) = (g_{k,1}(x), \dots, g_{k,G}(x))^\tran = (\mathds{1}_{\{x = 1\}}, \dots, \mathds{1}_{\{x = G\}})^\tran$ with categorical $x\in\{1, \dots, G\}$.
-
+\begin{frame}{Categorical base learner}
+  \vspace{-0.3cm}\[g_k(x) = (g_{k,1}(x), \dots, g_{k,G}(x))^\tran = (\mathds{1}_{\{x = 1\}}, \dots, \mathds{1}_{\{x = G\}})^\tran, \ \ x\in\{1, \dots, G\}\]
   \begin{center}
     \begin{figure}
       \includegraphics[width=0.7\textwidth]{figures/bs-cat/fig-cat6.png}
     \end{figure}
     \vspace{-0.5cm}
-    \scriptsize
-    $$
-      \design_k = \begin{blockarray}{ccccc}
+    \[
+      \design_k = \tiny\begin{blockarray}{ccccc}
         \color[HTML]{EE0000}g_{k,GER} & \color[HTML]{631879}g_{k,USA} & \color[HTML]{008B45}g_{k,SWE} & \color[HTML]{008280}g_{k,ZAF} & \color[HTML]{3B4992}g_{k,ETH}\\
       \begin{block}{(ccccc)}
+        \phantom{x}\\
         \color{lightgray}0 & \color{black}\bm{1} & \color{lightgray}0 & \color{lightgray}0 & \color{lightgray}0 \\
-      \color{lightgray}0 & \color{lightgray}0 & \color{lightgray}0 & \color{lightgray}0 & \color{black}\bm{1} \\
-      \color{black}\bm{1} & \color{lightgray}0 & \color{lightgray}0 & \color{lightgray}0 & \color{lightgray}0 \\
-      \color{lightgray}\vdots & \color{lightgray}\vdots & \color{lightgray}\vdots & \color{lightgray}\vdots & \color{lightgray}\vdots \\
-      \color{lightgray}0 & \color{lightgray}0 & \color{008B45}\bm{1} & \color{lightgray}0 & \color{lightgray}0 \\
-      \color{lightgray}0 & \color{lightgray}0 & \color{lightgray}0 & \color{black}\bm{1} & \color{lightgray}0 \\
-      \color{lightgray}0 & \color{lightgray}0 & \color[HTML]{008B45}\bm{1} & \color{lightgray}0 & \color{lightgray}0 \\
+        \color{lightgray}0 & \color{lightgray}0 & \color{lightgray}0 & \color{lightgray}0 & \color{black}\bm{1} \\
+        \color{black}\bm{1} & \color{lightgray}0 & \color{lightgray}0 & \color{lightgray}0 & \color{lightgray}0 \\
+        \color{lightgray}\vdots & \color{lightgray}\vdots & \color{lightgray}\vdots & \color{lightgray}\vdots & \color{lightgray}\vdots \\
+        \color{lightgray}0 & \color{lightgray}0 & \color{008B45}\bm{1} & \color{lightgray}0 & \color{lightgray}0 \\
+        \color{lightgray}0 & \color{lightgray}0 & \color{lightgray}0 & \color{black}\bm{1} & \color{lightgray}0 \\
+        \color{lightgray}0 & \color{lightgray}0 & \color[HTML]{008B45}\bm{1} & \color{lightgray}0 & \color{lightgray}0 \\
+        \phantom{x}
       \end{block}
     \end{blockarray}
-    $$
+    \]
     \normalsize
   \end{center}
+  \addtocounter{framenumber}{-1}
 \end{frame}
 
 
@@ -664,22 +753,253 @@
 
 
 
-\begin{frame}{Component-wise gradient boosting -- Base learner examples III}
-  \textbf{Tensor product base learner}
+\begin{frame}{(Row-wise) tensor product base learner}
+  Combination (interaction) $b_k \odot b_l$ between to base learners $b_k$ and $b_l$:
+  \[g_k(\xv) \otimes g_l(\xv) = (g_{k,1}(\xv)g_l(\xv)^\tran, \dots, g_{k,d_k}(\xv)g_l(\xv)^\tran)^\tran \]
+  Design matrix:
+  \[
+  \design_k \odot \design_l = \left(\begin{array}{c}
+    (g_{k}(\xi[1]) \otimes g_l(\xi[1]))^\tran \\
+    \vdots \\
+    (g_{k}(\xi[n]) \otimes g_l(\xi[n]))^\tran
+  \end{array}\right) \in\R^{n\times d_k d_l}
+  \]
 \end{frame}
+
+
+
+
+
+\begin{frame}{(Row-wise) tensor product base learner}
+  Example:
+  \begin{itemize}
+    \item $b_k$ encodes the country: $g_k(x) = (\mathds{1}_{\{x = 1\}}, \dots, \mathds{1}_{\{x = G\}})^\tran$
+    \item $b_l$ uses a B-spline basis for BMI: $g_l(x) = (B_{k,1}(x), \dots, B_{k,d_k}(x))^\tran$
+  \end{itemize}
+  $$
+    \design_k \odot \design_l = \tiny\begin{blockarray}{ccccc}
+      \color[HTML]{EE0000}g_{k,GER} & \color[HTML]{631879}g_{k,USA} & \color[HTML]{008B45}g_{k,SWE} & \color[HTML]{008280}g_{k,ZAF} & \color[HTML]{3B4992}g_{k,ETH}\\
+    \begin{block}{(ccccc)}
+      \phantom{x}\\
+      \color{lightgray}0 & \color[HTML]{631879}\bm{g_l(x^{(1)})} & \color{lightgray}0 & \color{lightgray}0 & \color{lightgray}0 \\
+      \color{white}0 & \color{white}0 & \color{white}0 & \color{white}0 & \color{white}\bm{g_l(x^{(2)})} \\
+      \color{white}\bm{g_l(x^{(3)})} & \color{white}0 & \color{white}0 & \color{white}0 & \color{white}0 \\
+      \color{white}\vdots & \color{white}\vdots & \color{white}\vdots & \color{white}\vdots & \color{white}\vdots \\
+      \color{white}0 & \color{white}0 & \color{white}\bm{g_l(x^{(73)})} & \color{white}0 & \color{white}0 \\
+      \color{white}0 & \color{white}0 & \color{white}0 & \color{white}\bm{g_l(x^{(74)})} & \color{white}0 \\
+      \color{white}0 & \color{white}0 & \color{white}\bm{g_l(x^{(75)})} & \color{white}0 & \color{white}0 \\
+      \phantom{x}
+    \end{block}
+  \end{blockarray}
+  $$
+  \normalsize
+  {\transparent{0.2}\includegraphics[width=0.19\textwidth]{figures/bs-tensor/fig-tensor-GER.png}}
+  \includegraphics[width=0.19\textwidth]{figures/bs-tensor/fig-tensor-USA.png}
+  {\transparent{0.2}\includegraphics[width=0.19\textwidth]{figures/bs-tensor/fig-tensor-SWE.png}}
+  {\transparent{0.2}\includegraphics[width=0.19\textwidth]{figures/bs-tensor/fig-tensor-ZAF.png}}
+  {\transparent{0.2}\includegraphics[width=0.19\textwidth]{figures/bs-tensor/fig-tensor-ETH.png}}
+\end{frame}
+
+\begin{frame}{(Row-wise) tensor product base learner}
+  Example:
+  \begin{itemize}
+    \item $b_k$ encodes the country: $g_k(x) = (\mathds{1}_{\{x = 1\}}, \dots, \mathds{1}_{\{x = G\}})^\tran$
+    \item $b_l$ uses a B-spline basis for BMI: $g_l(x) = (B_{k,1}(x), \dots, B_{k,d_k}(x))^\tran$
+  \end{itemize}
+  $$
+    \design_k \odot \design_l = \tiny\begin{blockarray}{ccccc}
+      \color[HTML]{EE0000}g_{k,GER} & \color[HTML]{631879}g_{k,USA} & \color[HTML]{008B45}g_{k,SWE} & \color[HTML]{008280}g_{k,ZAF} & \color[HTML]{3B4992}g_{k,ETH}\\
+    \begin{block}{(ccccc)}
+      \phantom{x}\\
+      \color{lightgray}0 & \color{black}\bm{g_l(x^{(1)})} & \color{lightgray}0 & \color{lightgray}0 & \color{lightgray}0 \\
+      \color{lightgray}0 & \color{lightgray}0 & \color{lightgray}0 & \color{lightgray}0 & \color[HTML]{3B4992}\bm{g_l(x^{(2)})} \\
+      \color{white}\bm{g_l(x^{(3)})} & \color{white}0 & \color{white}0 & \color{white}0 & \color{white}0 \\
+      \color{white}\vdots & \color{white}\vdots & \color{white}\vdots & \color{white}\vdots & \color{white}\vdots \\
+      \color{white}0 & \color{white}0 & \color{white}\bm{g_l(x^{(73)})} & \color{white}0 & \color{white}0 \\
+      \color{white}0 & \color{white}0 & \color{white}0 & \color{white}\bm{g_l(x^{(74)})} & \color{white}0 \\
+      \color{white}0 & \color{white}0 & \color{white}\bm{g_l(x^{(75)})} & \color{white}0 & \color{white}0 \\
+      \phantom{x}
+    \end{block}
+  \end{blockarray}
+  $$
+  \normalsize
+  {\transparent{0.2}\includegraphics[width=0.19\textwidth]{figures/bs-tensor/fig-tensor-GER.png}}
+  {\transparent{0.2}\includegraphics[width=0.19\textwidth]{figures/bs-tensor/fig-tensor-USA.png}}
+  {\transparent{0.2}\includegraphics[width=0.19\textwidth]{figures/bs-tensor/fig-tensor-SWE.png}}
+  {\transparent{0.2}\includegraphics[width=0.19\textwidth]{figures/bs-tensor/fig-tensor-ZAF.png}}
+  \includegraphics[width=0.19\textwidth]{figures/bs-tensor/fig-tensor-ETH.png}
+  \addtocounter{framenumber}{-1}
+\end{frame}
+
+\begin{frame}{(Row-wise) tensor product base learner}
+  Example:
+  \begin{itemize}
+    \item $b_k$ encodes the country: $g_k(x) = (\mathds{1}_{\{x = 1\}}, \dots, \mathds{1}_{\{x = G\}})^\tran$
+    \item $b_l$ uses a B-spline basis for BMI: $g_l(x) = (B_{k,1}(x), \dots, B_{k,d_k}(x))^\tran$
+  \end{itemize}
+  $$
+    \design_k \odot \design_l = \tiny\begin{blockarray}{ccccc}
+      \color[HTML]{EE0000}g_{k,GER} & \color[HTML]{631879}g_{k,USA} & \color[HTML]{008B45}g_{k,SWE} & \color[HTML]{008280}g_{k,ZAF} & \color[HTML]{3B4992}g_{k,ETH}\\
+    \begin{block}{(ccccc)}
+      \phantom{x}\\
+      \color{lightgray}0 & \color{black}\bm{g_l(x^{(1)})} & \color{lightgray}0 & \color{lightgray}0 & \color{lightgray}0 \\
+      \color{lightgray}0 & \color{lightgray}0 & \color{lightgray}0 & \color{lightgray}0 & \color{black}\bm{g_l(x^{(2)})} \\
+      \color[HTML]{EE0000}\bm{g_l(x^{(3)})} & \color{lightgray}0 & \color{lightgray}0 & \color{lightgray}0 & \color{lightgray}0 \\
+      \color{white}\vdots & \color{white}\vdots & \color{white}\vdots & \color{white}\vdots & \color{white}\vdots \\
+      \color{white}0 & \color{white}0 & \color{white}\bm{g_l(x^{(73)})} & \color{white}0 & \color{white}0 \\
+      \color{white}0 & \color{white}0 & \color{white}0 & \color{white}\bm{g_l(x^{(74)})} & \color{white}0 \\
+      \color{white}0 & \color{white}0 & \color{white}\bm{g_l(x^{(75)})} & \color{white}0 & \color{white}0 \\
+      \phantom{x}
+    \end{block}
+  \end{blockarray}
+  $$
+  \normalsize
+  \includegraphics[width=0.19\textwidth]{figures/bs-tensor/fig-tensor-GER.png}
+  {\transparent{0.2}\includegraphics[width=0.19\textwidth]{figures/bs-tensor/fig-tensor-USA.png}}
+  {\transparent{0.2}\includegraphics[width=0.19\textwidth]{figures/bs-tensor/fig-tensor-SWE.png}}
+  {\transparent{0.2}\includegraphics[width=0.19\textwidth]{figures/bs-tensor/fig-tensor-ZAF.png}}
+  {\transparent{0.2}\includegraphics[width=0.19\textwidth]{figures/bs-tensor/fig-tensor-ETH.png}}
+  \addtocounter{framenumber}{-1}
+\end{frame}
+
+\begin{frame}{(Row-wise) tensor product base learner}
+  Example:
+  \begin{itemize}
+    \item $b_k$ encodes the country: $g_k(x) = (\mathds{1}_{\{x = 1\}}, \dots, \mathds{1}_{\{x = G\}})^\tran$
+    \item $b_l$ uses a B-spline basis for BMI: $g_l(x) = (B_{k,1}(x), \dots, B_{k,d_k}(x))^\tran$
+  \end{itemize}
+  $$
+    \design_k \odot \design_l = \tiny\begin{blockarray}{ccccc}
+      \color[HTML]{EE0000}g_{k,GER} & \color[HTML]{631879}g_{k,USA} & \color[HTML]{008B45}g_{k,SWE} & \color[HTML]{008280}g_{k,ZAF} & \color[HTML]{3B4992}g_{k,ETH}\\
+    \begin{block}{(ccccc)}
+      \phantom{x}\\
+      \color{lightgray}0 & \color{black}\bm{g_l(x^{(1)})} & \color{lightgray}0 & \color{lightgray}0 & \color{lightgray}0 \\
+      \color{lightgray}0 & \color{lightgray}0 & \color{lightgray}0 & \color{lightgray}0 & \color{black}\bm{g_l(x^{(2)})} \\
+      \color[HTML]{EE0000}\bm{g_l(x^{(3)})} & \color{lightgray}0 & \color{lightgray}0 & \color{lightgray}0 & \color{lightgray}0 \\
+      \color{lightgray}\vdots & \color{lightgray}\vdots & \color{lightgray}\vdots & \color{lightgray}\vdots & \color{lightgray}\vdots \\
+      \color{lightgray}0 & \color{lightgray}0 & \color[HTML]{008B45}\bm{g_l(x^{(73)})} & \color{lightgray}0 & \color{lightgray}0 \\
+      \color{white}0 & \color{white}0 & \color{white}0 & \color{white}\bm{g_l(x^{(74)})} & \color{white}0 \\
+      \color{white}0 & \color{white}0 & \color{white}\bm{g_l(x^{(75)})} & \color{white}0 & \color{white}0 \\
+      \phantom{x}
+    \end{block}
+  \end{blockarray}
+  $$
+  \normalsize
+  {\transparent{0.2}\includegraphics[width=0.19\textwidth]{figures/bs-tensor/fig-tensor-GER.png}}
+  {\transparent{0.2}\includegraphics[width=0.19\textwidth]{figures/bs-tensor/fig-tensor-USA.png}}
+  \includegraphics[width=0.19\textwidth]{figures/bs-tensor/fig-tensor-SWE.png}
+  {\transparent{0.2}\includegraphics[width=0.19\textwidth]{figures/bs-tensor/fig-tensor-ZAF.png}}
+  {\transparent{0.2}\includegraphics[width=0.19\textwidth]{figures/bs-tensor/fig-tensor-ETH.png}}
+  \addtocounter{framenumber}{-1}
+\end{frame}
+
+\begin{frame}{(Row-wise) tensor product base learner}
+  Example:
+  \begin{itemize}
+    \item $b_k$ encodes the country: $g_k(x) = (\mathds{1}_{\{x = 1\}}, \dots, \mathds{1}_{\{x = G\}})^\tran$
+    \item $b_l$ uses a B-spline basis for BMI: $g_l(x) = (B_{k,1}(x), \dots, B_{k,d_k}(x))^\tran$
+  \end{itemize}
+  $$
+    \design_k \odot \design_l = \tiny\begin{blockarray}{ccccc}
+      \color[HTML]{EE0000}g_{k,GER} & \color[HTML]{631879}g_{k,USA} & \color[HTML]{008B45}g_{k,SWE} & \color[HTML]{008280}g_{k,ZAF} & \color[HTML]{3B4992}g_{k,ETH}\\
+    \begin{block}{(ccccc)}
+      \phantom{x}\\
+      \color{lightgray}0 & \color{black}\bm{g_l(x^{(1)})} & \color{lightgray}0 & \color{lightgray}0 & \color{lightgray}0 \\
+      \color{lightgray}0 & \color{lightgray}0 & \color{lightgray}0 & \color{lightgray}0 & \color{black}\bm{g_l(x^{(2)})} \\
+      \color[HTML]{EE0000}\bm{g_l(x^{(3)})} & \color{lightgray}0 & \color{lightgray}0 & \color{lightgray}0 & \color{lightgray}0 \\
+      \color{lightgray}\vdots & \color{lightgray}\vdots & \color{lightgray}\vdots & \color{lightgray}\vdots & \color{lightgray}\vdots \\
+      \color{lightgray}0 & \color{lightgray}0 & \color{black}\bm{g_l(x^{(73)})} & \color{lightgray}0 & \color{lightgray}0 \\
+      \color{lightgray}0 & \color{lightgray}0 & \color{lightgray}0 & \color[HTML]{008280}\bm{g_l(x^{(74)})} & \color{lightgray}0 \\
+      \color{white}0 & \color{white}0 & \color{white}\bm{g_l(x^{(75)})} & \color{white}0 & \color{white}0 \\
+      \phantom{x}
+    \end{block}
+  \end{blockarray}
+  $$
+  \normalsize
+  {\transparent{0.2}\includegraphics[width=0.19\textwidth]{figures/bs-tensor/fig-tensor-GER.png}}
+  {\transparent{0.2}\includegraphics[width=0.19\textwidth]{figures/bs-tensor/fig-tensor-USA.png}}
+  {\transparent{0.2}\includegraphics[width=0.19\textwidth]{figures/bs-tensor/fig-tensor-SWE.png}}
+  \includegraphics[width=0.19\textwidth]{figures/bs-tensor/fig-tensor-ZAF.png}
+  {\transparent{0.2}\includegraphics[width=0.19\textwidth]{figures/bs-tensor/fig-tensor-ETH.png}}
+  \addtocounter{framenumber}{-1}
+\end{frame}
+
+\begin{frame}{(Row-wise) tensor product base learner}
+  Example:
+  \begin{itemize}
+    \item $b_k$ encodes the country: $g_k(x) = (\mathds{1}_{\{x = 1\}}, \dots, \mathds{1}_{\{x = G\}})^\tran$
+    \item $b_l$ uses a B-spline basis for BMI: $g_l(x) = (B_{k,1}(x), \dots, B_{k,d_k}(x))^\tran$
+  \end{itemize}
+  $$
+    \design_k \odot \design_l = \tiny\begin{blockarray}{ccccc}
+      \color[HTML]{EE0000}g_{k,GER} & \color[HTML]{631879}g_{k,USA} & \color[HTML]{008B45}g_{k,SWE} & \color[HTML]{008280}g_{k,ZAF} & \color[HTML]{3B4992}g_{k,ETH}\\
+    \begin{block}{(ccccc)}
+      \phantom{x}\\
+      \color{lightgray}0 & \color{black}\bm{g_l(x^{(1)})} & \color{lightgray}0 & \color{lightgray}0 & \color{lightgray}0 \\
+      \color{lightgray}0 & \color{lightgray}0 & \color{lightgray}0 & \color{lightgray}0 & \color{black}\bm{g_l(x^{(2)})} \\
+      \color{black}\bm{g_l(x^{(3)})} & \color{lightgray}0 & \color{lightgray}0 & \color{lightgray}0 & \color{lightgray}0 \\
+      \color{lightgray}\vdots & \color{lightgray}\vdots & \color{lightgray}\vdots & \color{lightgray}\vdots & \color{lightgray}\vdots \\
+      \color{lightgray}0 & \color{lightgray}0 & \color{008B45}\bm{g_l(x^{(73)})} & \color{lightgray}0 & \color{lightgray}0 \\
+      \color{lightgray}0 & \color{lightgray}0 & \color{lightgray}0 & \color{black}\bm{g_l(x^{(74)})} & \color{lightgray}0 \\
+      \color{lightgray}0 & \color{lightgray}0 & \color[HTML]{008B45}\bm{g_l(x^{(75)})} & \color{lightgray}0 & \color{lightgray}0 \\
+      \phantom{x}
+    \end{block}
+  \end{blockarray}
+  $$
+  \normalsize
+  {\transparent{0.2}\includegraphics[width=0.19\textwidth]{figures/bs-tensor/fig-tensor-GER.png}}
+  {\transparent{0.2}\includegraphics[width=0.19\textwidth]{figures/bs-tensor/fig-tensor-USA.png}}
+  \includegraphics[width=0.19\textwidth]{figures/bs-tensor/fig-tensor-SWE.png}
+  {\transparent{0.2}\includegraphics[width=0.19\textwidth]{figures/bs-tensor/fig-tensor-ZAF.png}}
+  {\transparent{0.2}\includegraphics[width=0.19\textwidth]{figures/bs-tensor/fig-tensor-ETH.png}}
+  \addtocounter{framenumber}{-1}
+\end{frame}
+
+\begin{frame}{(Row-wise) tensor product base learner}
+  \begin{itemize}
+    \item Categoric - numeric base learner combination:
+      \begin{figure}
+        \centering
+        \includegraphics[width=0.5\textwidth]{figures/bs-tensor/fig-cat-num.png}
+      \end{figure}
+    \item Numeric - numeric base learner combination:
+      \begin{figure}
+        \centering
+        \includegraphics[width=0.5\textwidth]{figures/bs-tensor/fig-num-num.png}
+      \end{figure}
+  \end{itemize}
+\end{frame}
+
+
+\fSlide{Component-wise gradient boosting}{Fitting process}
 
 \begin{frame}{Initialization vs. fitting phase}
+  \textbf{Initialization:}
+  \begin{itemize}
+    \item
+      All design matrices $\design_k$ and penalties $\penMat_k$ are calculated for $k = 1, \dots, K$ and stored.
+    \item
+      Additionally, the Cholesky decomposition $\bm{L}_k$ of $\design_k^\tran \design_k + \penMat_k$ is calculated and stored.
+  \end{itemize}
+  \textbf{Fitting:}
+  \begin{itemize}
+    \item
+      Algorithm~\ref{algo:cwb} is executed.
+    \item
+      But, instead of calculating $\tbmh_\blk = \left(\design_\blk^\tran \design_\blk + \bm{K}_\blk\right)^{-1} \design^\tran_\blk \rmm$ in each iteration, reuse $\bm{L}_k$ to calculate $\tbmh$.
+  \end{itemize}
+
 \end{frame}
 
-%\input{tex/fig-cwb-anim.tex}
+\input{tex/fig-cwb-anim.tex}
 
-\begin{frame}{Component-wise gradient boosting -- Example}
-	\begin{figure}
-		\centering
-		\includegraphics[width=\textwidth]{figures/cwb-anim/fig-iter-0150.png}
-	\end{figure}
-	\addtocounter{framenumber}{-1}
-\end{frame}
+%\begin{frame}{Component-wise gradient boosting -- Example}
+%	\begin{figure}
+%		\centering
+%		\includegraphics[width=\textwidth]{figures/cwb-anim/fig-iter-0150.png}
+%	\end{figure}
+%	\addtocounter{framenumber}{-1}
+%\end{frame}
 
 
 \section{Efficiency}
@@ -705,7 +1025,7 @@
     \item \textbf{W.r.t. memory:}
     \begin{itemize}
       \item Each base learner requires to store a design matrix.
-      \item For example, using B-splines, it is common to to store an $n\times 24$ matrix (with $20$ knots, and cubic basis functions) for one numerical feature.
+      \item For example, using B-splines, it is common to to store an $n\times 24$ matrix (for $20$ knots, and cubic basis functions) for one numerical feature.
     \end{itemize}
     \item[] $\Rightarrow$ The RAM is filled very fast.
   \end{itemize}
@@ -734,7 +1054,7 @@
   \vspace{-0.2cm}
   \begin{figure}
     \centering
-    \includegraphics[width=0.7\textwidth]{figures/fig-cacb-paper.png}
+    \frame{\includegraphics[width=0.7\textwidth]{figures/fig-cacb-paper.png}}
   \end{figure}
   \vspace{-0.4cm}
 
@@ -748,10 +1068,7 @@
 
 \end{frame}
 
-\begin{frame}[plain]{}
-  \Large Efficiency\\[0.3cm]
-  {\LARGE\textbf{Accelerating component-wise boosting}}
-\end{frame}
+\fSlide{Efficiency}{Accelerating component-wise boosting}
 
 \begin{frame}{Accelerating component-wise boosting -- Idea}
 
@@ -820,7 +1137,7 @@
       with \(i = 1, \dots, n\), if \(m > 1\) and \(\bm{c}^{[m]} = \rmm\) if
       \(m = 0\).
 
-    \item[] $Rightarrow$ Each iteration adds not one but two base learners $b^{[m]}$ and $b^{[m]}_{\text{cor}}$:
+    \item[] $\Rightarrow$ Each iteration adds not one but two base learners $b^{[m]}$ and $b^{[m]}_{\text{cor}}$:
       \begin{itemize}
         \item $b^{[m]}_{\text{cor}}$ defines the momentum sequence to accelerate the fitting into the direction of the error-corrected pseudo residuals
         \item Computing a second base learner also means two double the runtime for the same number of iterations.
@@ -859,90 +1176,580 @@
 
   \begin{figure}
     \centering
-    \includegraphics[width=0.7\textwidth]{figures/fig-HCWB.pdf}
+    \includegraphics[width=0.6\textwidth]{figures/fig-HCWB.pdf}
+  \end{figure}
+\end{frame}
+
+\fSlide{Efficiency}{Reduced memory consumption in component-wise boosting}
+
+\begin{frame}{Base learner design matrix}
+  \begin{itemize}
+    \item
+      Each base learner \(b_1, \dots, b_K\) requires to build a design
+      matrix \(\bm{Z}_k\in\mathbb{R}^{n\times d_k}\) based on the feature
+      vector \(\bm{x}_k\).
+    \item
+      For example:
+  \end{itemize}
+
+  \begin{minipage}{0.85\textwidth}
+    {\tiny $\underbrace{\begin{pmatrix} 234 \\ 73 \\ 498 \\ \vdots \\ 112 \\ 261 \\ 343 \end{pmatrix}}_{= \bm{x}_{k}\in\R^n}$}
+    {\normalsize $\Rightarrow$}
+    {\tiny $\underbrace{
+      \begin{pmatrix}
+        \color{lightgray}0.00 & \color{lightgray}0.00 & \color{lightgray}0.00 & \color{black}0.07 & \color{black}0.62 & \color{black}0.31 &
+          \color{lightgray}0.00 & \color{lightgray}0.00 & \color{lightgray}0.00 & \color{lightgray}0.00\color{black}\\
+        \color{lightgray}0.00 & \color{black}0.20 & \color{black}0.66 & \color{black}0.14 & \color{lightgray}0.00 & \color{lightgray}0.00 &
+          \color{lightgray}0.00 & \color{lightgray}0.00 & \color{lightgray}0.00 & \color{lightgray}0.00\color{black}\\
+        \color{lightgray}0.00 & \color{lightgray}0.00 & \color{lightgray}0.00 & \color{lightgray}0.00 & \color{lightgray}0.00 & \color{lightgray}0.00 &
+          \color{lightgray}0.00 & \color{black}0.17 & \color{black}0.67 & \color{black}0.17\color{black}\\
+        \color{black}\vdots & \color{black}\vdots & \color{black}\vdots & \color{black}\vdots & \color{black}\vdots & \color{black}\vdots & \color{black}\vdots &
+          \color{black}\vdots & \color{black}\vdots & \color{black}\vdots\\
+        \color{lightgray}0.00 & \color{black}0.02 & \color{black}0.48 & \color{black}0.48 & \color{black}0.02 & \color{lightgray}0.00 & \color{lightgray}0.00 &
+          \color{lightgray}0.00 & \color{lightgray}0.00 & \color{lightgray}0.00\color{black}\\
+        \color{lightgray}0.00 & \color{lightgray}0.00 & \color{lightgray}0.00 & \color{black}0.01 & \color{black}0.40 & \color{black}0.55 & \color{black}0.04 &
+          \color{lightgray}0.00 & \color{lightgray}0.00 & \color{lightgray}0.00\color{black}\\
+        \color{lightgray}0.00 & \color{lightgray}0.00 & \color{lightgray}0.00 & \color{lightgray}0.00 & \color{lightgray}0.00 & \color{black}0.29 & \color{black}0.63 &
+          \color{black}0.08 & \color{lightgray}0.00 & \color{lightgray}0.00\color{black}\\
+      \end{pmatrix}
+    }_{=\bm{Z}_{k}\in\R^{n\times d_k}\ \text{(B-spline basis)}}$}%\hspace{-0.1cm}
+  {\normalsize $\Rightarrow$}
+  \end{minipage}\hspace{-0.5cm}
+  \begin{minipage}{0.13\textwidth}
+    \vspace{-0.3cm}
+    \parbox{0.5\linewidth}{\includegraphics[width=2.5cm]{figures/binning/fig-fe.png}}
+  \end{minipage}
+  \begin{itemize}
+    \item[$\Rightarrow$] If $n$ is large, the memory gets filled very fast (especially if $p$ is also large).
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Binning}
+  \begin{itemize}
+    \item
+      To reduce the memory consumption, we applied binning to operate on a
+      reduced representation of \(\bm{Z}_k\).
+    \item
+      Binning is a technique that allows to represent the \(n\) values
+      \(x_k^{(1)}, \dots, x_k^{(n)}\) of \(\xv_k\) by \(n^\ast < n\) design
+      points \(\bm{z}_k = (z_k^{(1)}, \dots, z_k^{(n^\ast)})\).
+    \item
+      The idea is to assign each \(x_k^{(i)}\) to the closest design point
+      \(z_k^{(i)}\) and store the assignment in a map
+      \(\text{ind}_k^{(i)}\):
+      \(x_k^{(i)} \approx z_k^{(\text{ind}_k^{(i)})}\)
+  \end{itemize}
+
+  \begin{center}\includegraphics[width=9cm]{figures/binning/fig-xbin.png} \end{center}
+\end{frame}
+
+\begin{frame}{Binning in GLMs}
+  \begin{itemize}
+    \item
+      \citet{lang2014multilevel} used binning to discretize feature vectors
+      to increase the efficiency of multilevel structured additive
+      regression.
+    \item
+      \citet{wood2017gigadata} applied binning to fit GAMs to gigadata and
+      argue that the best approximation is achieved by setting
+      \(n^\ast = \sqrt{n}\).
+    \item
+      \citet{li2020faster} presented optimized cross-product operations of
+      binned design matrices to also speed up the fitting.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Binning in CWB}
+  \begin{itemize}
+    \item
+      Represent numerical features \(\bm{x}_k\) by \(n^\ast\) design points
+      \(\bm{z}_k\).
+    \item
+      Build the design matrix \(\bm{Z}_k^\ast\) based on \(\bm{z}_k\) which
+      requires to store \(n^\ast d_k\) values instead of \(nd_k\).
+    \item
+      Use optimized cross-product operations to estimate the parameters
+      \(\tbh_k^{[m]}\) of base learner \(b_k\) to also speed up the fitting.
+
+    \item
+      \todo Hier sollte noch irgendwo dazu, dass das für jeden base learner der ein numerisches Feature handelt individuell gemacht wird.
+  \end{itemize}
+
+  \hspace{-0.2cm}
+  \begin{minipage}{0.85\textwidth}
+    {\tiny $\underbrace{\begin{pmatrix} 7.0 \\ 129.8 \\ 252.5 \\ 375.2 \\ 498.0 \end{pmatrix}}_{= \bm{z}_{k}\in\R^{n^\ast}}$}
+  {\normalsize $\Rightarrow$}
+  {\tiny $\underbrace{
+    \begin{pmatrix}
+      \color{black}0.17 & \color{black}0.67 & \color{black}0.17 & \color{lightgray}0.00 & \color{lightgray}0.00 & \color{lightgray}0.00 &
+        \color{lightgray}0.00 & \color{lightgray}0.00 & \color{lightgray}0.00 & \color{lightgray}0.00\\
+      \color{lightgray}0.00 & \color{lightgray}0.00 & \color{black}0.32 & \color{black}0.61 & \color{black}0.07 & \color{lightgray}0.00 &
+        \color{lightgray}0.00 & \color{lightgray}0.00 & \color{lightgray}0.00 & \color{lightgray}0.00\\
+      \color{lightgray}0.00 & \color{lightgray}0.00 & \color{lightgray}0.00 & \color{black}0.02 & \color{black}0.48 & \color{black}0.48 &
+        \color{black}0.02 & \color{lightgray}0.00 & \color{lightgray}0.00 & \color{lightgray}0.00\\
+      \color{lightgray}0.00 & \color{lightgray}0.00 & \color{lightgray}0.00 & \color{lightgray}0.00 & \color{lightgray}0.00 & \color{black}0.07 &
+        \color{black}0.61 & \color{black}0.32 & \color{lightgray}0.00 & \color{lightgray}0.00\\
+      \color{lightgray}0.00 & \color{lightgray}0.00 & \color{lightgray}0.00 & \color{lightgray}0.00 & \color{lightgray}0.00 & \color{lightgray}0.00 &
+        \color{lightgray}0.00 & \color{black}0.17 & \color{black}0.67 & \color{black}0.17
+    \end{pmatrix}}_{=\bm{Z}^\ast_{k}\in\R^{n^\ast\times d_k}\ \text{(B-spline basis)}}$}%\hspace{-0.2cm}
+  {\normalsize $\Rightarrow$}
+  \end{minipage}\hspace{-0.38cm}
+  \begin{minipage}{0.13\textwidth}
+    \vspace{-0.3cm}
+    \parbox{0.5\linewidth}{\includegraphics[width=2.5cm]{figures/binning/fig-fe.png}}
+  \end{minipage}
+\end{frame}
+
+\begin{frame}{Example: Memory savings}
+  Tabelle wie viel Speicher wann gespart wird.
+\end{frame}
+
+\fSlide{Efficiency}{Results and Summary}
+
+\begin{frame}{Results -- Runtime comparisons of CWB variants}
+  \begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{figures/fig-cacb-runtimes.pdf}
+  \end{figure}
+\end{frame}
+
+\begin{frame}{Results -- Benchmark comparisons of CWB variants}
+  \begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{figures/fig-cacb-benchmark.pdf}
+  \end{figure}
+\end{frame}
+
+\begin{frame}{Results -- Memory consumption for bigger data sets}
+  \begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{figures/fig-cacb-big-data.pdf}
+  \end{figure}
+\end{frame}
+
+\begin{frame}{Summary}
+  \begin{itemize}
+    \item
+      We incorporated Nesterovs momentum to speed up the fitting time.
+    \item
+      Binning allows to save memory by a reduced representation and also to speed up the fitting process by using tailored matrix operations.
+    \item
+      In a simulation study, we tried to find good default values for the momentum for both (ACWB: $0.0034$ and HCWB: $0.037$) algorithms.
+    \item
+      A benchmark showed the effectiveness of these approaches by being significantly faster by achieving the same or better test performance.
+    \item
+      The adaptions are implemented in \texttt{compboost}.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Outlook}
+  \begin{itemize}
+    \item
+      Using array arithmetic to even faster calculate matrix products and tensor product base learner.
+  \end{itemize}
+\end{frame}
+
+\section{Distributed computing}
+
+\newcommand{\iSite}{s}
+\newcommand{\nSites}{S}
+\newcommand{\doH}{\texttt{[H]}\xspace}
+\newcommand{\doS}{\texttt{[S]}\xspace}
+\newcommand{\algospace}{\hspace{\algorithmicindent}}
+\newcommand{\lsite}{\blk_\times}
+
+\begin{frame}{Distrirbuted data set}
+  Assume the country column is not present in the data set and each country holds a its own partition:\vspace{-0.3cm}
+  {\tiny
+  \begin{table}
+  \centering
+  \begin{tabular}[t]{cccccc}
+  \toprule
+    \textbf{Life.expectancy} & {\color{lightgray}\textbf{Country}} & \textbf{Year} & \textbf{BMI} & \textbf{Adult.Mortality} & \textbf{Data set}\\
+  \midrule
+    51.2 & {\color{lightgray}ETH} & 2000 & 12.3 & 391 & \multirow{3}{*}{\color[HTML]{3B4992}\normalsize$\mathcal{D}_1}\\
+    {\tiny$\vdots$} & {\tiny\color{lightgray}$\vdots$} & {\tiny$\vdots$} & {\tiny$\vdots$} & {\tiny$\vdots$}\\
+    64.8 & {\color{lightgray}ETH} & 2015 & 17.6 & 225\\ \hline
+    78.0 & {\color{lightgray}GER} & 2000 & 55.1 & 95 & \multirow{3}{*}{\color[HTML]{EE0000}\normalsize$\mathcal{D}_2}\\
+    {\tiny$\vdots$} & {\tiny\color{lightgray}$\vdots$} & {\tiny$\vdots$} & {\tiny$\vdots$} & {\tiny$\vdots$}\\
+    81.0 & {\color{lightgray}GER} & 2015 & 62.3 & 68\\ \hline
+    79.6 & {\color{lightgray}SWE} & 2000 & 52.8 & 73 & \multirow{3}{*}{\color[HTML]{008B45}\normalsize$\mathcal{D}_3}\\
+    {\tiny$\vdots$} & {\tiny\color{lightgray}$\vdots$} & {\tiny$\vdots$} & {\tiny$\vdots$} & {\tiny$\vdots$}\\
+    82.4 & {\color{lightgray}SWE} & 2015 & 59.5 & 53\\ \hline
+    76.8 & {\color{lightgray}USA} & 2000 & 6.1  & 114 & \multirow{3}{*}{\color[HTML]{631879}\normalsize$\mathcal{D}_4}\\
+    {\tiny$\vdots$} & {\tiny\color{lightgray}$\vdots$} & {\tiny$\vdots$} & {\tiny$\vdots$} & {\tiny$\vdots$}\\
+    79.3 & {\color{lightgray}USA} & 2015 & 69.6 & 13\\ \hline
+    57.3 & {\color{lightgray}ZAF} & 2000 & 4.1 & 397 & \multirow{3}{*}{\color[HTML]{008280}\normalsize$\mathcal{D}_5}\\
+    {\tiny$\vdots$} & {\tiny\color{lightgray}$\vdots$} & {\tiny$\vdots$} & {\tiny$\vdots$} & {\tiny$\vdots$}\\
+    62.9 & {\color{lightgray}ZAF} & 2015 & 51.1 & 328\\
+  \bottomrule
+  \end{tabular}
+  \end{table}}
+
+  $\Rightarrow$ The data set is distributed over $S$ (here $S = 5$) sites.
+  %\begin{itemize}
+  %  \item Grafik mit Weltkarte und den Datensätzen bei den Länern
+  %  \item Wir vergessen jetzt die länder und nehmen an jedes hat einen Datensatz
+  %  \item Sensitive Informationen die nicht geteilt werden dürfen
+  %  \item Wir wollen trotzdem ein Modell fitten und noch einen Schritt weiter gehen
+  %  \item und site-specific effects schätzen.
+  %  \item Sagen, dass es vertically und horizontally partitioned data gibt.
+  %  \item Alle Vorteil von CWB will man halt hben, die sind toll, also wollen wir CWB verwenden.
+  %  \item Beschreiben welche Daten geteilt werden dürfen.
+  %\end{itemize}
+\end{frame}
+
+\begin{frame}{Distrirbuted data set}
+  Assume the country column is not present in the data set and each country holds a its own partition:
+  \vspace{-0.2cm}
+  \begin{figure}
+    \centering
+    \includegraphics[width=0.45\textwidth]{figures/weltkarte.png}
+  \end{figure}
+  \vspace{-0.5cm}
+  \begin{itemize}
+    \item We are looking at \textbf{horizontally partitioned data}: Each site holds the same features but different observations.
+    \item \textbf{Vertically partitioned data}: Each site has the same observations but different features.
+  \end{itemize}
+  $\Rightarrow$ Can we still fit a model with CWB?
+\end{frame}
+
+\begin{frame}{Distributed setup}
+  \begin{itemize}
+    \item $\nSites$ sites, each exclusively hold a data set $\mathcal{D}_\iSite$
+    \item A host in the middle controls the communication with the sites, the sites cannot communicate with each other.
+    \item The host is the volnurable component since it can be highjacket and access to the communicated data is ont out of question.
+    \item Hence, the communicated data must ensure privacy of the original data sets.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Non-disclosive data}
+  \begin{itemize}
+    \item The entire data set or parts of it are not allowed to get shared between sites or with third parties (like analysts).
+    \item Often applies to sensitive data, e.g., most data sets with private information about individuals.
+  \end{itemize}
+  \begin{itemize}
+    \item[$\Rightarrow$] It is not possible to merge the data sets $\mathcal{D} = \cup_{s=1}^S \mathcal{D}_s$ at a global server/machine/location.
+  \end{itemize}
+  What is allowed to get shared?
+  \begin{itemize}
+    \item Aggregated data that does not allow to re-construct parts of the original data set.
+    \item Encrypted data (e.g. via homomorphic encription~\citep{gentry2009fully}).
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{About -- Publication}
+  \vspace{-0.2cm}
+  \begin{figure}
+    \centering
+    \frame{\includegraphics[width=0.55\textwidth]{figures/fig-paper-dcwb.png}}
+  \end{figure}
+  \vspace{-0.2cm}
+  \textbf{Aims:}
+  \begin{itemize}
+    \item
+      Provide a \textbf{distributed and lossless CWB algorithm}: \[\operatorname{distCWB}(\mathcal{D}_1, \dots, \mathcal{D}_\nSites, ...) = \operatorname{CWB}(\mathcal{D}, ...)\]
+    \item
+      \textbf{Allow for site-specific corrections} get a deeper understanding of the distributed data.
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}{Site-specific vs. main effects}
+  %\todo Auf main oder shared festlegen?
+  \begin{itemize}
+    \item
+      Reminder: CWB can be used to fit a GAM $f(\xv) = f_0 + \sum_{k=1}^K b_k(\xv)$ with the base learners $b_k$ as additive terms.
+    \item
+      In the distributed setup, we denote $b_k$ as shared or main effect that is equal between all sites.
+
+    \item
+      Furhter, these effects are extended by site-specific effects $b_{k,s}$ that allow a site-specific correction of the shared effect.
+  \end{itemize}
+
+  The final model assembles both, common shared and site specific effects:
+  \[f(\xv) = f_0 + \sum_{k=1}^K\left(b_k(\xv) + \sum_{s=1}^S b_{k,s}(\xv)\right) = f_0 + \sum_{k=1}^K b_k(\xv) + (b_k \odot b_0)(\xv)\]
+
+  This structure is equal to CWB with base learner $b_k$, $k = 1, \dots, K$, and tensor product base learners $b_k \odot b_0$, $k = 1, \dots, K$, with $b_0$ a latent one hot encoded categorical base learner modelling the $S$ sites.
+\end{frame}
+
+%\begin{frame}{Component-wise boosting as fitting engine}
+  %\begin{itemize}
+    %\item CWB can be used to fit the a model related to equation xyz
+    %\item Simply achieved by:
+      %\begin{itemize}
+        %\item Assuming a latent categorical feature for the sites
+        %\item Use one base learner for the features to model the whole feature effect
+        %\item and a tensor product base learner between all fetures and the latent categorical feature to estimate site-specific effects.
+      %\end{itemize}
+    %\item Adaption to distributed data requires to fit the base learners to distributed data.
+  %\end{itemize}
+%\end{frame}
+
+\begin{frame}{Distributed base learner estimation}
+  We restricted CWB to fit $b_k$ using OLS by $\tbh_k = (\design_k^\tran \design_k)^{-1}\design_k^\tran \rmm$.
+  \begin{algorithm}[H]
+  \scriptsize
+  \caption{Vanilla CWB algorithm}\label{algo:cwb}
+  %\vspace{0.15cm}
+  \hspace*{\algorithmicindent} \textbf{Input} Train data $\D$, learning rate $\nu$, number of boosting iterations $M$, loss\\
+  \hspace*{\algorithmicindent} \phantom{\textbf{Input} } function $L$, base learners $b_1, \dots, b_\blK$\\
+  \hspace*{\algorithmicindent} \textbf{Output} Model $\fh = \fmh[M]$\vspace{0.1cm}
+  \hrule
+  \begin{algorithmic}[1]
+  \Procedure{$\operatorname{CWB}$}{$\D,\nu,M,L,b_1, \dots, b_\blK$}
+      \State \tikzmk{A}Initialize: $f_0 = \fh^{[0]}(\xv) = \argmin_{c\in\mathcal{Y}}\riske(c|\D)$
+      \While{$m \leq M$}
+          \State $\rmi = -\left.\pd{\Lxyi}{f(\xi)}\right|_{f = \fmdh},\ \ \forall i \in \{1, \dots, n\}$
+          \For{$\blk \in \{1, \dots, \blK\}$}\tikzmk{B}\boxtrans
+              \State \tikzmk{A}$\tbmh_\blk = \left(\design_\blk^\tran \design_\blk + \bm{K}_\blk\right)^{-1} \design^\tran_\blk \rmm$ \quad {\color{red} $\bm{\leftarrow}$}\tikzmk{B}\boxittwo{olivedrab}
+              \State \tikzmk{A}$\sse_\blk = \sum_{i=1}^n(\rmi - b_\blk(\xi | \tbmh_\blk))^2$
+          \EndFor
+          \State $\blk^{[m]} = \argmin_{\blk\in\{1, \dots, \blK\}} \sse_\blk$
+          \State $\fmh(\xv) = \fmdh(\xv) + \nu b_{\blk^{[m]}} (\xv | \tbmh_{\blk^{[m]}})$\tikzmk{B}\boxtrans
+      \EndWhile
+      \State \textbf{return} $\fh = \fh^{[M]}$
+  \EndProcedure
+  \end{algorithmic}
+  \end{algorithm}
+  $\Rightarrow$ Fitting a linear model to horizontally distributed data allows to also fit the base learners.
+\end{frame}
+
+
+
+\begin{frame}{Distributed linear model}
+  We restricted CWB to fit $b_k$ as a linear model in each iteration $m$ as $\tbh_k = (\design_k^\tran \design_k)^{-1}\design_k^\tran \rmm$.\\[0.5cm]
+
+  $\Rightarrow$ Fitting a linear model to horizontally distributed data allows to also fit the base learners.
+
+  %\begin{itemize}
+    %\item Each site holds a design matrix for the $k\th$ base learner: $\design_{k,\iSite}$ and a slice of the pseudo residuals: $\rmm_\iSite$
+    %\item Decomposing the data into individual parts $\mathcal{D}_\iSite$ allows to calculate $\bm{F}_{k} = \design_k^\tran \design_k = \sum_{\iSite=1}^\nSites \design_{k,\iSite}^\tran \design_{k,\iSite}$ and $\design_k^\tran \rmm = \sum_{\iSite=1}^\nSites \design_{k,\iSite}^\tran \rmm_\iSite$
+    %\item The sites are allowed to communicate $\bm{F}_{k,\iSite} = \design_{k,\iSite}^\tran \design_{k,\iSite}$ and $\bm{u}_{k,\iSite} = \design_{k,\iSite}^\tran \rmm_\iSite$ as long as \enquote{enough observations} were used to calculate $\bm{F}_{k,\iSite}$ and $\bm{u}_{k,\iSite}$.
+    %\item That allows to gather $\bm{F}_{k,\iSite}$, $\iSite = 1, \dots, \nSites$, and $\bm{u}_{k,\iSite}$, $\iSite = 1, \dots, \nSites$, at the host to calculate $\bm{F}_k = \sum_{\iSite = 1}^\nSites \bm{F}_{k,\iSite}$ and $\bm{u}_k = \sum_{\iSite = 1}^\nSites \bm{u}_{k,\iSite}$.
+    %\item Finally, the host can calculate $\tbh_k^{[m]} = (\bm{F}_k + \penMat_k)^{-1} \bm{u}_k$.
+  %\end{itemize}
+\end{frame}
+
+\begin{frame}{Distributed linear model}
+  \begin{itemize}
+    \item Each site holds a design matrix for the $k\th$ base learner: $\design_{k,\iSite}$ and a slice of the pseudo residuals: $\rmm_\iSite$
+  \end{itemize}
+  \tikz[remember picture, overlay] \node[anchor=center] at ($(current page.center)-(0,1.1)$) {\includegraphics[width=0.7\textwidth]{figures/distr-lm-iter1.png}};
+  %\begin{figure}
+    %\centering
+    %\includegraphics[width=0.6\textwidth]{figures/distr-lm-iter1.png}
+  %\end{figure}
+\end{frame}
+
+\begin{frame}{Distributed linear model}
+  \begin{itemize}
+    \item Each site calculates $\bm{F}_{k,\iSite} = \design_{k,\iSite}^\tran \design_{k,\iSite}$ and $\bm{u}^{[m]}_{k,\iSite} = \bm{Z}^\tran_{k,\iSite}\rmm_k$.
+  \end{itemize}
+  \tikz[remember picture, overlay] \node[anchor=center] at ($(current page.center)-(0,1.1)$) {\includegraphics[width=0.7\textwidth]{figures/distr-lm-iter2.png}};
+  %\begin{figure}
+    %\centering
+    %\includegraphics[width=0.6\textwidth]{figures/distr-lm-iter2.png}
+  %\end{figure}
+\end{frame}
+
+\begin{frame}{Distributed linear model}
+  \begin{itemize}
+    \item The sites are allowed to communicate $\bm{F}_{k,\iSite}$ and $\bm{u}_{k,\iSite}^{[m]}$ as long as \enquote{enough observations} are used.
+  \end{itemize}
+  \tikz[remember picture, overlay] \node[anchor=center] at ($(current page.center)-(0,1.1)$) {\includegraphics[width=0.7\textwidth]{figures/distr-lm-iter3.png}};
+  %\begin{figure}
+    %\centering
+    %\includegraphics[width=0.6\textwidth]{figures/distr-lm-iter3.png}
+  %\end{figure}
+\end{frame}
+
+\begin{frame}{Distributed linear model}
+  \begin{itemize}
+    \item That allows to gather $\bm{F}_{k,\iSite}$, and $\bm{u}_{k,\iSite}^{[m]}$, $\iSite = 1, \dots, \nSites$, calculate $\bm{F}_k = \sum_{\iSite = 1}^\nSites \bm{F}_{k,\iSite}$ and $\bm{u}_k^{[m]} = \sum_{\iSite = 1}^\nSites \bm{u}_{k,\iSite}$, and to estimate $\tbh_k^{[m]} = (\bm{F}_k + \penMat_k)^{-1} \bm{u}_k$.
+  \end{itemize}
+  \tikz[remember picture, overlay] \node[anchor=center] at ($(current page.center)-(0,1.1)$) {\includegraphics[width=0.7\textwidth]{figures/distr-lm-iter4.png}};
+  %\begin{figure}
+    %\centering
+    %\includegraphics[width=0.6\textwidth]{figures/distr-lm-iter4.png}
+  %\end{figure}
+\end{frame}
+
+\begin{frame}{Distributed linear model}
+  \begin{algorithm}[H]
+    \footnotesize
+    \caption{Distributed Effect Estimation~\citep{karr2005secure}.\\
+    The line prefixes \doS and \doH indicate whether the operation is conducted at the sites (\doS) or at the host (\doH).}\label{algo:lm-distr}
+    \vspace{0.15cm}
+    \hspace*{\algorithmicindent} \textbf{Input} Sites design matrices $\design_{k,1}, \dots, \design_{k,\nSites}$, response vectors $\rmm_1, \dots, \rmm_\nSites$ and\\
+    \hspace*{\algorithmicindent} \phantom{\textbf{Input} }an optional penalty matrix $\penMat_k$.\\
+    \hspace*{\algorithmicindent} \textbf{Output} Estimated parameter vector $\thetabh_k$.\vspace{0.15cm}
+    \hrule
+    \begin{algorithmic}[1]
+      \Procedure{$\operatorname{distFit}$}{$\design_{k,1}, \dots, \design_{k,\nSites}, \rmm_1, \dots, \rmm_\nSites, \penMat_k$}
+        \For{$\iSite \in \{1, \dots, \nSites\}$}
+          \State \doS $\bm{F}_{k,\iSite} = \design_{k,\iSite}^\tran \design_{k,\iSite}$
+          \State \doS $\bm{u}_{k,\iSite} = \design_{k,\iSite}^\tran \rmm_\iSite$
+          \State \doS Communicate $\bm{F}_{k,\iSite}$ and $\bm{u}_{k,\iSite}$ to the host
+        \EndFor
+        \State \doH $\bm{F}_k = \sum_{\iSite=1}^\nSites \bm{F}_{k,\iSite} + \penMat_k$
+        \State \doH $\bm{u}_k = \sum_{\iSite=1}^\nSites \bm{u}_{k,\iSite}$
+        \State \doH \textbf{return} $\thetabh_k = \bm{F}_k^{-1}\bm{u}_k$
+      \EndProcedure
+    \end{algorithmic}
+  \end{algorithm}
+  \normalsize
+\end{frame}
+
+\begin{frame}{Distributed fitting of main effects in CWB}
+  \begin{itemize}
+    \item
+      In each iteration $m$, the main effect is estimated by $\tbh^{[m]}_k = \operatorname{distFit}($\design_{k,1}, \dots, \design_{k,\nSites}, \yv_1, \dots, \yv_\nSites, \penMat_k$)$
+    \item
+      bla
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Distributed fitting of site-specific effects}
+  \begin{itemize}
+    \item Site-specific effects sind etwas "einfacher" als base learner per site zu schätzen
+    \item parametercshätzer teilen
+    \item Zeigen, dass der tensor spline learner einfach als einzelne Fits ausgedrückt werden kann.
+  \end{itemize}
+  \begin{align*}
+    \tbh_{\lsite}% &= \fitbl(\yv, \D, b_{\lsite})
+    &= \left(\design_{\lsite}^\tran \design_{\lsite} +  \penMat_{\lsite}\right)^{-1}\design_{\lsite}^\tran \yv
+    %= \left(\begin{array}{c}
+    %     \thetabh_{{\lsite}, 1}  \\
+    %     \vdots \\
+    %     \thetabh_{{\lsite}, \nSites}
+    %\end{array}\right)
+    \notag \\
+    &= \left(
+    \begin{array}{c}
+         (\design_{\blk,1}^\tran \design_{\blk,1} + \lambda_0\idMat_{d_\blk} + \penMat_\blk)^{-1} \design_{\blk,1}^\tran \yv_1 \\
+         \vdots \\
+         (\design_{\blk,\nSites}^\tran \design_{\blk,\nSites} + \lambda_0\idMat_{d_\blk} + \penMat_\blk)^{-1} \design_{l,\nSites}^\tran \yv_\nSites
+    \end{array}
+    \right)%, \label{eq:bl-fit-kronecker-pooled}
+  \end{align*}
+  \[\tbh_{{\lsite},\iSite} = (\design_{\blk,\iSite}^\tran \design_{\blk,\iSite} + \lambda_0\idMat_{d_\blk} + \penMat_\blk)^{-1} \design_{\blk,\iSite}^\tran \yv_\iSite\]
+
+\end{frame}
+
+\begin{frame}{Distributed component-wise gradient boosting}
+  \begin{itemize}
+    \item How is everything put together?
+    \item Algorithmus zeigen, vielleicht eine iteration mit dem ganzen teilen etc. in die Karte einzeichnen?
+    \item Kurz communication costs zeigen?
+    \item Implementiert mit DataSHIELD.
+  \end{itemize}
+\end{frame}
+
+\fSlide{Efficiency}{Comparisons, summary, and outlook}
+
+\begin{frame}{Comparisons}
+  \begin{itemize}
+    \item \textbf{Reminder:} The proposed algorithm is a lossless and distributed pendant to CWB on the merged data.
+    \item Instead of benchmarking the algorithm, we compared it with a GAMM fitted with \texttt{mgcv}.
+  \end{itemize}
+  \begin{figure}
+    \centering
+    \includegraphics[width=0.9\textwidth]{figures/fig-dcwb-effect-decomposition.pdf}
+  \end{figure}
+  \vspace{-0.2cm}
+  \begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{figures/fig-dcwb-effect-comparison.pdf}
   \end{figure}
 \end{frame}
 
 
-\begin{frame}{Results}
-  About
+\begin{frame}{Summary and outlook}
+  \textbf{Summary:}
+  \begin{itemize}
+    \item
+      CWB can be fit to distributed data in a lossless fashion by just relying on aggregated data that do not reveal private information about the used data set.
+    \item
+      Site-specific effects can be estimated by making use of the structure of tensor product base learner.
+    \item
+      The SSE calculation is also done easily ba sharing the SSE per site and aggregating them.
+  \end{itemize}
+  \textbf{Outlook:}
+  \begin{itemize}
+    \item Account for vertically and horizontally distributed data.
+    \item Reduce the communication costs to speed up the fitting process.
+  \end{itemize}
 \end{frame}
 
-\begin{frame}[plain]{}
-  \Large Efficiency\\[0.3cm]
-  {\LARGE\textbf{Reduced memory consumption in component-wise boosting}}
-\end{frame}
 
-\begin{frame}{Adaption}
-  About
-\end{frame}
 
-\begin{frame}{Results}
-  About
-\end{frame}
+%%%%% SHORT SUMMARIES, MAX 2 SLIDES ---------------------------------------------------------------%%
 
 
 \section{Automation}
 
-\begin{frame}{Automation}
-  About
+\begin{frame}{About}
+  \begin{itemize}
+    \item About
+    \item Publication
+  \end{itemize}
 \end{frame}
 
-\begin{frame}{Autocompboost}
-  About
+\begin{frame}{Summary / Outlook}
 \end{frame}
 
-\begin{frame}{Results}
-  About
+\section{Distributed model evaluation}
+
+\begin{frame}{About}
+  \begin{itemize}
+    \item About
+    \item Publication
+  \end{itemize}
 \end{frame}
 
-\begin{frame}{Outlook}
-  About
+\section{\texttt{compboost}}
+
+\begin{frame}{About}
+  Was macht compboost, ganz kleines Bsp.
+  \begin{itemize}
+    \item About
+    \item Publication
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Speedup compared to mboost}
+  \begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{figures/fig-cacb-mboost-comparison.pdf}
+  \end{figure}
 \end{frame}
 
 
-\section{Distributed computing}
-
-\begin{frame}{Distributed computing}
-  About
+\begin{frame}{Summary / Outlook}
 \end{frame}
 
-\begin{frame}{Adaption}
-  About
-\end{frame}
+%\begin{frame}[allowframebreaks]{Bla}
+%
+%  Bla
+%  \citep[see, e.g.,][]{Pepe2003}, or \cite{delong1988comparing}
+%
+%\end{frame}
 
-\begin{frame}{Results}
-  About
-\end{frame}
-
-\begin{frame}{Outlook}
-  About
-\end{frame}
-
-
-\begin{frame}[allowframebreaks]{Bla}
-
-  Bla
-  \citep[see, e.g.,][]{Pepe2003}, or \cite{delong1988comparing}
-
-\end{frame}
+%%%%% BACKUP SLIDES ------------------------------------------------------------------------------%%
 
 \appendix
 
 \begin{frame}[allowframebreaks]{References}
-
 \nocite{*}
 \scriptsize
 \bibliography{references}
 
 \end{frame}
 
-\section{Backup slides}
+\section{Backup}
 
 \begin{frame}{Backup}
-
-bla
-
 \end{frame}
 
 \end{document}
