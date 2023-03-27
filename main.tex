@@ -76,6 +76,9 @@
 
 \newcommand{\boxtrans}{\tikz[remember picture,overlay]{\node[yshift=3pt,fill=white,opacity=.7,fit={($(A)+(-0.5,0.35\baselineskip)$)($(B)+(0.5\linewidth,-1.03\baselineskip)$)}] {};}\ignorespaces}
 \newcommand{\boxtranstwo}{\tikz[remember picture,overlay]{\node[yshift=3pt,fill=white,opacity=.7,fit={($(A)+(-0.5,0.1\baselineskip)$)($(B)+(0.5\linewidth,-1.03\baselineskip)$)}] {};}\ignorespaces}
+\newcommand{\boxtransthree}{\tikz[remember picture,overlay]{\node[yshift=3pt,fill=white,opacity=.7,fit={($(A)+(-2.5,0.23\baselineskip)$)($(B)+(\linewidth,-1.03\baselineskip)$)}] {};}\ignorespaces}
+\newcommand{\boxtransalgo}{\tikz[remember picture,overlay]{\node[yshift=3pt,fill=white,opacity=.7,fit={($(A)+(-2.5,1.5\baselineskip)$)($(B)+(\linewidth,-1.03\baselineskip)$)}] {};}\ignorespaces}
+\newcommand{\boxtransfour}{\tikz[remember picture,overlay]{\node[yshift=3pt,fill=white,opacity=.7,fit={($(A)+(-2.5,0.34\baselineskip)$)($(B)+(\linewidth,-1.03\baselineskip)$)}] {};}\ignorespaces}
 \newcommand{\boxit}[1]{\tikz[remember picture,overlay]{\node[yshift=3pt,fill=#1,opacity=.25,fit={($(A)+(-0.5,0.1\baselineskip)$)($(B)+(0.35\linewidth,-0.5\baselineskip)$)}] {};}\ignorespaces}
 \newcommand{\boxittwo}[1]{\tikz[remember picture,overlay]{\node[yshift=3pt,fill=#1,opacity=.25,fit={($(A)+(-0.35,0.3\baselineskip)$)($(B)+(0.15\linewidth,-0.5\baselineskip)$)}] {};}\ignorespaces}
 \newcommand{\boxitthree}[1]{\tikz[remember picture,overlay]{\node[yshift=3pt,fill=#1,opacity=.25,fit={($(A)+(0.05,0.4\baselineskip)$)($(B)+(0.05\linewidth,-0.4\baselineskip)$)}] {};}\ignorespaces}
@@ -369,13 +372,13 @@
 %
 %\end{frame}
 
-\begin{frame}{Overview}
-  \begin{figure}
-    \centering
-    \includegraphics[width=0.6\textwidth]{figures/topics.png}
-  \end{figure}\vspace{-0.2cm}
-  The focus of this presentation is on CWB adjustments {[}1{]}, {[}2{]}, and {[}4{]}. The other contributions are briefly summarized at the end of the presentation.
-\end{frame}
+%\begin{frame}{Overview}
+%  \begin{figure}
+%    \centering
+%    \includegraphics[width=0.6\textwidth]{figures/topics.png}
+%  \end{figure}\vspace{-0.2cm}
+%  The focus of this presentation is on CWB adjustments {[}1{]}, {[}2{]}, and {[}4{]}. The other contributions are briefly summarized at the end of the presentation.
+%\end{frame}
 
 \begin{frame}{Overview}
   \begin{figure}
@@ -392,100 +395,136 @@
     \addtocounter{framenumber}{-1}
 \end{frame}
 
+
+
 \section{Background}
 
-%\begin{frame}{History of component-wise boosting}
-%
-%\end{frame}
+\begin{frame}{Data}
+  Example throughout this presentation is a subset of a WHO data set\footnote[frame,1]{Available at \url{kaggle.com/datasets/kumarajarshi/life-expectancy-who}} about life expectation in years per country:
 
-\begin{frame}{Basic terminology}
-  \textbf{Machine learning (ML):}
+  \scriptsize
+  \input{tex/tab-example}
+  \normalsize
   \begin{itemize}
-    \item
-      $p$-dimensional covariate or feature vector $\xv = (x_1, \dots, x_p) \in \Xspace$ and target variable $y\in\Yspace$.
-
-    \item
-      Data set $\D = \Dset$ with $(\xi, \yi)$.% sampled from an unknown probability distribution $\mathbb{P}_{xy}$.
-
-    \item
-      True underlying relationship $f : \Xspace \to \R$, $\xv \mapsto f(\xv)$.
-
-    \item
-      Goal of is to estimate $\fh = \argmin_{f} \riske(f | \D)$ with $\riske(f | \D) = n^{-1} \sum_{(\xv, y)\in\D} L(y, \fh(\xv))$.
-%      \begin{itemize}
-%        \item Empirical risk $\riske(f | \D) = n^{-1} \sum_{(\xv, y)\in\D} L(y, \fh(\xv))$ and
-%        \item Loss function $L : \Yspace\times\Yspace \to \R_+$, $(y,\yhat) \mapsto L(y,\yhat)$.
-%      \end{itemize}
-
-%    \item
-%      The inducer $\Ind : \mathbb{D} \times \hpspace \to \fspace$, $(\D, \hp) \mapsto \fh=\Ind_{\hp}(\D)$ gets a data set $\D\in\mathbb{D}$ with hyperparameters (HPs) $\hp\in\hpspace$.
-  \end{itemize}
-  \textbf{Gradient boosting (GB):}
-  \begin{itemize}
-      \item 
-        $\fh$ is fitted by conducting functional gradient descent $\fmdh = \fmh + \nu \hat{b}^{[m]}$ for $M$ steps with a weak base learner $b(\xv | \tb)$.
-
-        \item
-            In each iteration $m = 1, \dots, M$, $\hat{b}^{[m]}$ is fit to pseudo residuals $\rmm$ by minimizing the SSE: $\tbmh = \argmin_{\tb} \sum_{i=1}^n(\rmi - b(\xi | \tb))^2$
+      \item  
+        $n = 75$ (for \texttt{Country} $\in$ $\{$\texttt{GER}, \texttt{USA}, \texttt{SWE}, \texttt{ZAF}, \texttt{ETH}$\}$, $n = 2938$ for all countries) 
+      \item $p = 20$
   \end{itemize}
 \end{frame}
 
-%\begin{frame}{Gradient boosting}
-%  \begin{itemize}
-%    \item
-%      Gradient boosting (GB) aims to estimate $f$ based on assembling weak base learners $b:\Xspace \to \Yspace, \xv \mapsto b(\xv | \tb)$ parameterized by $\tb$.
-%
-%    \item
-%      The model estimate $\fh$ is fitted by conducting functional gradient descent $\fmdh = \fmh + \nu \hat{b}^{[m]}$ for $M$ steps. The estimated model is then $\fh = \fmh[M]$.
-%
-%    \item
-%      To obtain the model update $\hat{b}^{[m]}$ in iteration $m$, the weak base learner $b$ is fit to pseudo residuals $\rmm$ by minimizing the SSE: $\tbmh = \argmin_{\tb} \sum_{i=1}^n(\rmi - b(\xi | \tb))^2$
-%
-%    \item
-%      The pseudo residuals $\rmi = -\left.\pd{\Lxyi}{f(\xi)}\right|_{f = \fmdh}$, $i \in \{1, \dots, n\}$, ($\rmm$ is the vector of pseudo residuals) contain the information in which direction to move $\fmh$ for a better fit to the training data $\D$.
-%
-%    \item
-%      The fitting is initialized with $\fh^{[0]}(\xv) = \argmin_{c\in\mathcal{Y}}\riske(c|\D)$ and repeated $M$ times or until an early stopping criterion is met.
-%  \end{itemize}
-%\end{frame}
+\fSlide{Background}{Component-wise gradient boosting}
 
-%\begin{frame}{Gradient boosting -- Algorithm}
-%  \begin{algorithm}[H]
-%  \footnotesize
-%  \caption{GB algorithm}\label{algo:gb}
-%  %\vspace{0.15cm}
-%  \hspace*{\algorithmicindent} \textbf{Input} Train data $\D$, number of boosting iterations $M$, loss function $L$, base learner $b$\\
-%  \hspace*{\algorithmicindent} \textbf{Output} Model $\fh = \fmh[M]$\vspace{0.1cm}
-%  \hrule
-%  \begin{algorithmic}[1]
-%  \Procedure{$\operatorname{GB}$}{$\D,M, L,b$}
-%      \State Initialize: $f_0 = \fh^{[0]}(\xv) = \argmin_{c\in\mathcal{Y}}\riske(c|\D)$
-%      \While{$m \leq M$}
-%          \State $\rmi = -\left.\pd{\Lxyi}{f(\xi)}\right|_{f = \fmdh},\ \ \forall i \in \{1, \dots, n\}$
-%          \State $\tbmh = \argmin_{\tb} \sum_{i=1}^n(\rmi - b(\xi | \tb))^2$
-%          \State $\nu_m = \argmin_{\nu\in\R} \sum_{i=1}^n L(\rmi, \fmh + \nu \hat{b}^{[m]}(\xi | \tbmh))$
-%          \State $\fmh(\xv) = \fmdh(\xv) + \nu_m \hat{b}^{[m]}(\xv | \tbmh)$
-%      \EndWhile
-%      \State \textbf{return} $\fh = \fh^{[M]}$
-%  \EndProcedure
-%  \end{algorithmic}
-%  \end{algorithm}
-%  \vspace{-0.5cm}
-%  A common choice for the base learner in GB is, e.g., to use trees~\citep{friedman2001greedy}. Based on the base learner, further adaptions to the algorithm are made to, e.g., increase speed or predictive power~\citep{chen2015xgboost}.
-%\end{frame}
+\begin{frame}{GB algorithm}
+  \begin{algorithm}[H]
+  \footnotesize
+  \caption{Gradient boosting (GB) algorithm}
+  %\vspace{0.15cm}
+  \hspace*{\algorithmicindent} \textbf{Input} Train data $\D$, number of boosting iterations $M$, loss function $L$, base learner $b$\\
+  \hspace*{\algorithmicindent} \textbf{Output} Model $\fh = \fmh[M]$\vspace{0.1cm}
+  \hrule
+  \begin{algorithmic}[1]
+  \Procedure{$\operatorname{GB}$}{$\D,M, L,b$}
+      \State Initialize: $f_0 = \fh^{[0]}(\xv) = \argmin_{c\in\mathcal{Y}}\riske(c|\D)$
+      \While{$m \leq M$}
+          \State $\rmi = -\left.\pd{\Lxyi}{f(\xi)}\right|_{f = \fmdh},\ \ \forall i \in \{1, \dots, n\}$
+          \State $\tbmh = \argmin_{\tb} \sum_{i=1}^n(\rmi - b(\xi | \tb))^2$
+          \State $\nu_m = \argmin_{\nu\in\R} \sum_{i=1}^n L(\rmi, \fmh + \nu \hat{b}^{[m]}(\xi | \tbmh))$
+          \State $\fmh(\xv) = \fmdh(\xv) + \nu_m \hat{b}^{[m]}(\xv | \tbmh)$
+      \EndWhile
+      \State \textbf{return} $\fh = \fh^{[M]}$
+  \EndProcedure
+  \end{algorithmic}
+  \end{algorithm}
+\end{frame}
 
-%\fSlide{Background}{Component-wise gradient boosting}
+\begin{frame}{GB algorithm}
+  \addtocounter{algorithm}{-1}
+  \begin{algorithm}[H]
+  \tikzmk{A}
+  \footnotesize
+  \caption{Gradient boosting (GB) algorithm}
+  %\vspace{0.15cm}
+  \hspace*{\algorithmicindent} \textbf{Input} Train data $\D$, number of boosting iterations $M$, loss function $L$, base learner $b$\\
+  \hspace*{\algorithmicindent} \textbf{Output} Model $\fh = \fmh[M]$\vspace{0.1cm}
+  \hrule
+  \begin{algorithmic}[1]
+  \Procedure{$\operatorname{GB}$}{$\D,M, L,b$}
+      \State Initialize: $f_0 = \fh^{[0]}(\xv) = \argmin_{c\in\mathcal{Y}}\riske(c|\D)$
+      \While{$m \leq M$}\tikzmk{B}\boxtransalgo
+          \State $\rmi = -\left.\pd{\Lxyi}{f(\xi)}\right|_{f = \fmdh},\ \ \forall i \in \{1, \dots, n\}$
+          \State \tikzmk{A}$\tbmh = \argmin_{\tb} \sum_{i=1}^n(\rmi - b(\xi | \tb))^2$
+          \State $\nu_m = \argmin_{\nu\in\R} \sum_{i=1}^n L(\rmi, \fmh + \nu \hat{b}^{[m]}(\xi | \tbmh))$
+          \State $\fmh(\xv) = \fmdh(\xv) + \nu_m \hat{b}^{[m]}(\xv | \tbmh)$
+      \EndWhile
+      \State \textbf{return} $\fh = \fh^{[M]}$\tikzmk{B}\boxtransthree
+  \EndProcedure
+  \end{algorithmic}
+  \end{algorithm}
+  The pseudo residuals $\rmm$ contain the information in which direction to move $\fmdh$ to better fit the data.
+  \addtocounter{framenumber}{-1}
+\end{frame}
+
+\begin{frame}{GB algorithm}
+  \addtocounter{algorithm}{-1}
+  \begin{algorithm}[H]
+  \tikzmk{A}
+  \footnotesize
+  \caption{Gradient boosting (GB) algorithm}
+  %\vspace{0.15cm}
+  \hspace*{\algorithmicindent} \textbf{Input} Train data $\D$, number of boosting iterations $M$, loss function $L$, base learner $b$\\
+  \hspace*{\algorithmicindent} \textbf{Output} Model $\fh = \fmh[M]$\vspace{0.1cm}
+  \hrule
+  \begin{algorithmic}[1]
+  \Procedure{$\operatorname{GB}$}{$\D,M, L,b$}
+      \State Initialize: $f_0 = \fh^{[0]}(\xv) = \argmin_{c\in\mathcal{Y}}\riske(c|\D)$
+      \While{$m \leq M$}
+          \State $\rmi = -\left.\pd{\Lxyi}{f(\xi)}\right|_{f = \fmdh},\ \ \forall i \in \{1, \dots, n\}$\tikzmk{B}\boxtransalgo
+          \State $\tbmh = \argmin_{\tb} \sum_{i=1}^n(\rmi - b(\xi | \tb))^2$
+          \State \tikzmk{A}$\nu_m = \argmin_{\nu\in\R} \sum_{i=1}^n L(\rmi, \fmh + \nu \hat{b}^{[m]}(\xi | \tbmh))$
+          \State $\fmh(\xv) = \fmdh(\xv) + \nu_m \hat{b}^{[m]}(\xv | \tbmh)$
+      \EndWhile
+      \State \textbf{return} $\fh = \fh^{[M]}$\tikzmk{B}\boxtransthree
+  \EndProcedure
+  \end{algorithmic}
+  \end{algorithm}
+  One base learner $b$ (often a tree) is fitted to $\rmm$.
+  \addtocounter{framenumber}{-1}
+\end{frame}
+
+\begin{frame}{GB algorithm}
+  \addtocounter{algorithm}{-1}
+  \begin{algorithm}[H]
+  \tikzmk{A}
+  \footnotesize
+  \caption{Gradient boosting (GB) algorithm}
+  %\vspace{0.15cm}
+  \hspace*{\algorithmicindent} \textbf{Input} Train data $\D$, number of boosting iterations $M$, loss function $L$, base learner $b$\\
+  \hspace*{\algorithmicindent} \textbf{Output} Model $\fh = \fmh[M]$\vspace{0.1cm}
+  \hrule
+  \begin{algorithmic}[1]
+  \Procedure{$\operatorname{GB}$}{$\D,M, L,b$}
+      \State Initialize: $f_0 = \fh^{[0]}(\xv) = \argmin_{c\in\mathcal{Y}}\riske(c|\D)$
+      \While{$m \leq M$}
+          \State $\rmi = -\left.\pd{\Lxyi}{f(\xi)}\right|_{f = \fmdh},\ \ \forall i \in \{1, \dots, n\}$
+          \State $\tbmh = \argmin_{\tb} \sum_{i=1}^n(\rmi - b(\xi | \tb))^2$
+          \State $\nu_m = \argmin_{\nu\in\R} \sum_{i=1}^n L(\rmi, \fmh + \nu \hat{b}^{[m]}(\xi | \tbmh))$\tikzmk{B}\boxtransalgo
+          \State $\fmh(\xv) = \fmdh(\xv) + \nu_m \hat{b}^{[m]}(\xv | \tbmh)$
+      \EndWhile
+      \State \tikzmk{A}\textbf{return} $\fh = \fh^{[M]}$\tikzmk{B}\boxtransthree
+  \EndProcedure
+  \end{algorithmic}
+  \end{algorithm}
+  The fitted base learner is added to the ensemble by conducting a functional gradient descent step. 
+  \addtocounter{framenumber}{-1}
+\end{frame}
 
 \begin{frame}{CWB basics}
   \begin{itemize}
     \item
       Compared to GB, CWB can choose from a set of $K$ base learners $b \in \{b_1, \dots, b_K\}$.
 
-%    \item
-%      The learning rate $\nu$ is fixed and not optimized by a line search.
-
     \item
-      Often, $b_1, \dots, b_K$ are chosen to be (interpretable) statistical models and hence $f$ corresponds to a generalized additive model~\citep[GAM;][]{hastie2017generalized}: \[f(\xv) = f_0 + \sum_{k=1}^K b_k(\xv | \tb), \ \ \text{intercept}\ f_0\]
+      Often, $b_1, \dots, b_K$ are chosen to be (interpretable) statistical models and hence $f$ corresponds to a generalized additive model~\citep[GAM;][]{hastie2017generalized}: \[f(\xv) = f_0 + \sum_{k=1}^K b_k(\xv | \tb_k), \ \ \text{intercept}\ f_0\]
 
     \item
       Advantages of CWB:
@@ -502,25 +541,12 @@
   \end{itemize}
 \end{frame}
 
-\begin{frame}{Base learner}
-  \begin{itemize}
-    \item
-      Each base learner $b_k$ has a basis transformation $g_k : \Xspace \to \R^{d_k}$ with \[g_k(\xv) = (g_{k,1}(\xv), \dots, g_{k,d_k}(\xv))^\tran.\] and is linear in the parameters: $b_k(\xv | \tb) = g_k(\xv)^\tran \tb$
 
-    \item
-      For $n$ data points $\xi[1], \dots, \xi[n]$, each base learner defines a design matrix: \[
-      \design_k = \left(\begin{array}{c}
-      g_{k}^\tran(\xi[1]) \\
-      \vdots \\
-      g_{k}^\tran(\xi[n])\end{array}\right)\in\R^{n\times d_k}\]
 
-    \item
-      Each base learner can have a penalty matrix $\penMat_k$ and is fitted using the least squares estimator \[\tbh_k = (\design_\blk^\tran \design_\blk + \penMat_k)^{-1} \design_k^\tran \yv.\]
-  \end{itemize}
-\end{frame}
-
-\begin{frame}{Algorithm}
+\begin{frame}{GB algorithm}
+\addtocounter{algorithm}{-1}
   \begin{algorithm}[H]
+  \tikzmk{A}
   \footnotesize
   \caption{GB algorithm}
   %\vspace{0.15cm}
@@ -531,19 +557,50 @@
   \Procedure{$\operatorname{GB}$}{$\D,M, L,b$}
       \State Initialize: $f_0 = \fh^{[0]}(\xv) = \argmin_{c\in\mathcal{Y}}\riske(c|\D)$
       \While{$m \leq M$}
-          \State $\rmi = -\left.\pd{\Lxyi}{f(\xi)}\right|_{f = \fmdh},\ \ \forall i \in \{1, \dots, n\}$
+          \State $\rmi = -\left.\pd{\Lxyi}{f(\xi)}\right|_{f = \fmdh},\ \ \forall i \in \{1, \dots, n\}$\tikzmk{B}\boxtransalgo
           \State \tikzmk{A}$\tbmh = \argmin_{\tb} \sum_{i=1}^n(\rmi - b(\xi | \tb))^2$\tikzmk{B}\boxittwo{red}
-          \State $\nu_m = \argmin_{\nu\in\R} \sum_{i=1}^n L(\rmi, \fmh + \nu \hat{b}^{[m]}(\xi | \tbmh))$
+          \State \tikzmk{A}$\nu_m = \argmin_{\nu\in\R} \sum_{i=1}^n L(\rmi, \fmh + \nu \hat{b}^{[m]}(\xi | \tbmh))$
           \State $\fmh(\xv) = \fmdh(\xv) + \nu_m \hat{b}^{[m]}(\xv | \tbmh)$
       \EndWhile
-      \State \textbf{return} $\fh = \fh^{[M]}$
+      \State \textbf{return} $\fh = \fh^{[M]}$\tikzmk{B}\boxtransthree
   \EndProcedure
   \end{algorithmic}
   \end{algorithm}
 \end{frame}
 
-\begin{frame}{Algorithm}
+\begin{frame}{CWB algorithm}
+  \begin{algorithm}[H]
+  \tikzmk{A}
+  \footnotesize
+  \caption{Vanilla CWB algorithm}\label{algo:cwb}
+  %\vspace{0.15cm}
+  \hspace*{\algorithmicindent} \textbf{Input} Train data $\D$, learning rate $\nu$, number of boosting iterations $M$, loss\\
+  \hspace*{\algorithmicindent} \phantom{\textbf{Input} } function $L$, base learners $b_1, \dots, b_\blK$\\
+  \hspace*{\algorithmicindent} \textbf{Output} Model $\fh = \fmh[M]$\vspace{0.1cm}
+  \hrule
+  \begin{algorithmic}[1]
+  \Procedure{$\operatorname{CWB}$}{$\D,\nu,M,L,b_1, \dots, b_\blK$}
+      \State Initialize: $f_0 = \fh^{[0]}(\xv) = \argmin_{c\in\mathcal{Y}}\riske(c|\D)$
+      \While{$m \leq M$}
+          \State $\rmi = -\left.\pd{\Lxyi}{f(\xi)}\right|_{f = \fmdh},\ \ \forall i \in \{1, \dots, n\}$\tikzmk{B}\boxtransalgo
+          \For{\tikzmk{A}$\blk \in \{1, \dots, \blK\}$}
+              \State $\tbmh_\blk = \left(\design_\blk^\tran \design_\blk + \bm{K}_\blk\right)^{-1} \design^\tran_\blk \rmm$
+              \State $\sse_\blk = \sum_{i=1}^n(\rmi - b_\blk(\xi | \tbmh_\blk))^2$
+          \EndFor
+          \State $\blk^{[m]} = \argmin_{\blk\in\{1, \dots, \blK\}} \sse_\blk$
+          \tikzmk{B}
+          \boxit{olivedrab}
+          \State \tikzmk{A}$\fmh(\xv) = \fmdh(\xv) + \nu b_{\blk^{[m]}} (\xv | \tbmh_{\blk^{[m]}})$
+      \EndWhile
+      \State \textbf{return} $\fh = \fh^{[M]}$\tikzmk{B}\boxtransfour
+  \EndProcedure
+  \end{algorithmic}
+  \end{algorithm}
+  \addtocounter{framenumber}{-1}
+\end{frame}
 
+\begin{frame}{CWB algorithm}
+  \addtocounter{algorithm}{-1}
   \begin{algorithm}[H]
   \footnotesize
   \caption{Vanilla CWB algorithm}\label{algo:cwb}
@@ -554,17 +611,15 @@
   \hrule
   \begin{algorithmic}[1]
   \Procedure{$\operatorname{CWB}$}{$\D,\nu,M,L,b_1, \dots, b_\blK$}
-      \State \tikzmk{A}Initialize: $f_0 = \fh^{[0]}(\xv) = \argmin_{c\in\mathcal{Y}}\riske(c|\D)$
+      \State Initialize: $f_0 = \fh^{[0]}(\xv) = \argmin_{c\in\mathcal{Y}}\riske(c|\D)$
       \While{$m \leq M$}
-          \State $\rmi = -\left.\pd{\Lxyi}{f(\xi)}\right|_{f = \fmdh},\ \ \forall i \in \{1, \dots, n\}$\tikzmk{B}\boxtrans
-          \For{\tikzmk{A}$\blk \in \{1, \dots, \blK\}$}
+          \State $\rmi = -\left.\pd{\Lxyi}{f(\xi)}\right|_{f = \fmdh},\ \ \forall i \in \{1, \dots, n\}$
+          \For{$\blk \in \{1, \dots, \blK\}$}
               \State $\tbmh_\blk = \left(\design_\blk^\tran \design_\blk + \bm{K}_\blk\right)^{-1} \design^\tran_\blk \rmm$
               \State $\sse_\blk = \sum_{i=1}^n(\rmi - b_\blk(\xi | \tbmh_\blk))^2$
           \EndFor
           \State $\blk^{[m]} = \argmin_{\blk\in\{1, \dots, \blK\}} \sse_\blk$
-          \tikzmk{B}
-          \boxit{olivedrab}
-          \State \tikzmk{A}$\fmh(\xv) = \fmdh(\xv) + \nu b_{\blk^{[m]}} (\xv | \tbmh_{\blk^{[m]}})$\tikzmk{B}\boxtrans
+          \State $\fmh(\xv) = \fmdh(\xv) + \nu b_{\blk^{[m]}} (\xv | \tbmh_i{\blk^{[m]}})$
       \EndWhile
       \State \textbf{return} $\fh = \fh^{[M]}$
   \EndProcedure
@@ -573,59 +628,23 @@
   \addtocounter{framenumber}{-1}
 \end{frame}
 
-\begin{frame}{Initialization vs. fitting phase}
-  \textbf{Initialization:}
+\begin{frame}{Base learner}
   \begin{itemize}
     \item
-      All design matrices $\design_k$ and penalties $\penMat_k$ are calculated for $k = 1, \dots, K$ and stored prior to executing Algorithm~\ref{algo:cwb}.
-    \item
-      Additionally, to increase the runtime of the fitting, the Cholesky decomposition $\bm{L}_k = \operatorname{chol}(\design_k^\tran \design_k + \penMat_k)$ is calculated and stored.
-  \end{itemize}
-  \textbf{Fitting:}
-  \begin{itemize}
-    \item
-      Algorithm~\ref{algo:cwb} is executed.
-    \item
-      But, instead of calculating $\tbmh_\blk = \left(\design_\blk^\tran \design_\blk + \bm{K}_\blk\right)^{-1} \design^\tran_\blk \rmm$ in each iteration, reuse $\bm{L}_k$ to calculate $\tbmh_k = \operatorname{cholSolve}(\bm{L}_k, \design^\tran_k\rmm)$.
-  \end{itemize}
+      Each base learner $b_k$ has a basis transformation $g_k : \Xspace \to \R^{d_k}$ with \[g_k(\xv) = (g_{k,1}(\xv), \dots, g_{k,d_k}(\xv))^\tran.\] and is linear in the parameters: $b_k(\xv | \tb_k) = g_k(\xv)^\tran \tb_k$
 
+    \item
+      For $n$ data points $\xi[1], \dots, \xi[n]$, each base learner defines a design matrix: \[
+      \design_k = \left(\begin{array}{c}
+      g_{k}^\tran(\xi[1]) \\
+      \vdots \\
+      g_{k}^\tran(\xi[n])\end{array}\right)\in\R^{n\times d_k}\]
+
+    \item
+      Each base learner can have a penalty matrix $\penMat_k$ (e.g. $\penMat_k = \lambda_k\bm{I}_{d_k}$ for ridge regression) and is fitted using the least squares estimator \[\tbh_k = (\design_\blk^\tran \design_\blk + \penMat_k)^{-1} \design_k^\tran \yv.\]
+  \end{itemize}
 \end{frame}
 
-
-%\begin{frame}{Component-wise gradient boosting – Example}
-%  Example throughout this presentation is a subset of a WHO data set\footnote[frame,1]{Full description and data is available at \url{kaggle.com/datasets/kumarajarshi/life-expectancy-who}} about life expectation in years per country:
-%
-%  \begin{itemize}
-%    \item
-%      Target variable is \texttt{Life.expectancy} in years.
-%    \item
-%      Features are \texttt{Country}, \texttt{Year}, \texttt{Alcohol} recorded per capital (15+) consumption (in liters of pure alcohol), and \texttt{Adult.Mortality} rates of both sexes of dying between 15 and 60 years per 1000 population.
-%
-%    \item
-%      Numerical features \texttt{Year}, \texttt{Alcohol} and \texttt{Adult.Mortality} are modeled as P-splines \citep{eilers1996flexible} and \texttt{Country} as one-hot-encoded linear model with ridge penalty.
-%
-%    %\item
-%      %Define setup, iterations etc.
-%  \end{itemize}
-%\end{frame}
-
-\fSlide{\phantom{x}}{Example data throughout the talk}
-
-\begin{frame}{Data}
-  Example throughout this presentation is a subset of a WHO data set\footnote[frame,1]{Available at \url{kaggle.com/datasets/kumarajarshi/life-expectancy-who}} about life expectation in years per country:
-
-  \scriptsize
-  \input{tex/tab-example}
-  \normalsize
-  \begin{itemize}
-      \item  
-        $n = 80$ (for \texttt{Country} $\in$ $\{$\texttt{GER}, \texttt{USA}, \texttt{SWE}, \texttt{ZAF}, \texttt{ETH}$\}$, $n = 2938$ for all countries) 
-      \item $p = 20$
-  \end{itemize}
-
-\end{frame}
-
-\fSlide{Component-wise gradient boosting}{Base learner}
 
 \begin{frame}{B/P-Spline base learner}
   \vspace{-0.3cm}\[g_k(x) = (B_{k,1}(x), \dots, B_{k,d_k}(x))^\tran\] B-spline basis $B$ of a pre-defined degree~\citep{eilers1996flexible}.
@@ -646,10 +665,19 @@
     \end{array}\right)\in\R^{n\times d_k}
     \]
   \end{center}
-
 \end{frame}
 
 \input{tex/tex-bmat-anim.tex}
+
+\begin{frame}{B/P-spline base learner}
+  \vspace{-0.3cm}\[g_k(x) = (B_{k,1}(x), \dots, B_{k,d_k}(x))^\tran\] B-spline basis $B$ of a pre-defined degree~\citep{eilers1996flexible}.
+\begin{center}
+    \begin{tabular}{ccccc}
+         $\design_k$ & $\Rightarrow$ & $\tbh_k = (\design_k^\tran \design_k + \penMat_k)^{-1}\design_k^\tran y$ & $\Rightarrow$ & \includegraphics[align=c,width=5cm]{figures/bs-estimated.pdf}
+    \end{tabular}
+\end{center}
+
+\end{frame}
 
 \begin{frame}{Categorical base learner}
   \vspace{-0.3cm}\[g_k(x) = (g_{k,1}(x), \dots, g_{k,G}(x))^\tran = (\mathds{1}_{\{x = 1\}}, \dots, \mathds{1}_{\{x = G\}})^\tran, \ \ x\in\{1, \dots, G\}\]
@@ -840,6 +868,14 @@
   \addtocounter{framenumber}{-1}
 \end{frame}
 
+\begin{frame}{Categorical base learner}
+  \vspace{-0.3cm}\[g_k(x) = (g_{k,1}(x), \dots, g_{k,G}(x))^\tran = (\mathds{1}_{\{x = 1\}}, \dots, \mathds{1}_{\{x = G\}})^\tran, \ \ x\in\{1, \dots, G\}\]
+\begin{center}
+    \begin{tabular}{ccccc}
+         $\design_k$ & $\Rightarrow$ & $\tbh_k = (\design_k^\tran \design_k + \penMat_k)^{-1}\design_k^\tran y$ & $\Rightarrow$ & \includegraphics[align=c,width=5cm]{figures/bcat-estimated.pdf}
+    \end{tabular}
+\end{center}
+\end{frame}
 
 
 
@@ -885,11 +921,11 @@
   \end{blockarray}
   $$
   \normalsize
-  {\transparent{0.2}\includegraphics[width=0.19\textwidth]{figures/bs-tensor/fig-tensor-GER.png}}
-  \includegraphics[width=0.19\textwidth]{figures/bs-tensor/fig-tensor-USA.png}
-  {\transparent{0.2}\includegraphics[width=0.19\textwidth]{figures/bs-tensor/fig-tensor-SWE.png}}
-  {\transparent{0.2}\includegraphics[width=0.19\textwidth]{figures/bs-tensor/fig-tensor-ZAF.png}}
-  {\transparent{0.2}\includegraphics[width=0.19\textwidth]{figures/bs-tensor/fig-tensor-ETH.png}}
+  {\transparent{0.2}\includegraphics[width=0.19\textwidth]{figures/fig-bs0-GER.png}}
+  {\transparent{1}\includegraphics[width=0.19\textwidth]{figures/fig-bs0-USA.png}}
+  {\transparent{0.2}\includegraphics[width=0.19\textwidth]{figures/fig-bs0-SWE.png}}
+  {\transparent{0.2}\includegraphics[width=0.19\textwidth]{figures/fig-bs0-ZAF.png}}
+  {\transparent{0.2}\includegraphics[width=0.19\textwidth]{figures/fig-bs0-ETH.png}}
 \end{frame}
 
 \begin{frame}{RWTP base learner}
@@ -915,11 +951,11 @@
   \end{blockarray}
   $$
   \normalsize
-  {\transparent{0.2}\includegraphics[width=0.19\textwidth]{figures/bs-tensor/fig-tensor-GER.png}}
-  {\transparent{0.2}\includegraphics[width=0.19\textwidth]{figures/bs-tensor/fig-tensor-USA.png}}
-  {\transparent{0.2}\includegraphics[width=0.19\textwidth]{figures/bs-tensor/fig-tensor-SWE.png}}
-  {\transparent{0.2}\includegraphics[width=0.19\textwidth]{figures/bs-tensor/fig-tensor-ZAF.png}}
-  \includegraphics[width=0.19\textwidth]{figures/bs-tensor/fig-tensor-ETH.png}
+  {\transparent{0.2}\includegraphics[width=0.19\textwidth]{figures/fig-bs0-GER.png}}
+  {\transparent{0.2}\includegraphics[width=0.19\textwidth]{figures/fig-bs0-USA.png}}
+  {\transparent{0.2}\includegraphics[width=0.19\textwidth]{figures/fig-bs0-SWE.png}}
+  {\transparent{0.2}\includegraphics[width=0.19\textwidth]{figures/fig-bs0-ZAF.png}}
+  {\transparent{1}\includegraphics[width=0.19\textwidth]{figures/fig-bs0-ETH.png}}
   \addtocounter{framenumber}{-1}
 \end{frame}
 
@@ -946,11 +982,11 @@
   \end{blockarray}
   $$
   \normalsize
-  \includegraphics[width=0.19\textwidth]{figures/bs-tensor/fig-tensor-GER.png}
-  {\transparent{0.2}\includegraphics[width=0.19\textwidth]{figures/bs-tensor/fig-tensor-USA.png}}
-  {\transparent{0.2}\includegraphics[width=0.19\textwidth]{figures/bs-tensor/fig-tensor-SWE.png}}
-  {\transparent{0.2}\includegraphics[width=0.19\textwidth]{figures/bs-tensor/fig-tensor-ZAF.png}}
-  {\transparent{0.2}\includegraphics[width=0.19\textwidth]{figures/bs-tensor/fig-tensor-ETH.png}}
+  {\transparent{1}\includegraphics[width=0.19\textwidth]{figures/fig-bs0-GER.png}}
+  {\transparent{0.2}\includegraphics[width=0.19\textwidth]{figures/fig-bs0-USA.png}}
+  {\transparent{0.2}\includegraphics[width=0.19\textwidth]{figures/fig-bs0-SWE.png}}
+  {\transparent{0.2}\includegraphics[width=0.19\textwidth]{figures/fig-bs0-ZAF.png}}
+  {\transparent{0.2}\includegraphics[width=0.19\textwidth]{figures/fig-bs0-ETH.png}}
   \addtocounter{framenumber}{-1}
 \end{frame}
 
@@ -977,11 +1013,11 @@
   \end{blockarray}
   $$
   \normalsize
-  {\transparent{0.2}\includegraphics[width=0.19\textwidth]{figures/bs-tensor/fig-tensor-GER.png}}
-  {\transparent{0.2}\includegraphics[width=0.19\textwidth]{figures/bs-tensor/fig-tensor-USA.png}}
-  \includegraphics[width=0.19\textwidth]{figures/bs-tensor/fig-tensor-SWE.png}
-  {\transparent{0.2}\includegraphics[width=0.19\textwidth]{figures/bs-tensor/fig-tensor-ZAF.png}}
-  {\transparent{0.2}\includegraphics[width=0.19\textwidth]{figures/bs-tensor/fig-tensor-ETH.png}}
+  {\transparent{0.2}\includegraphics[width=0.19\textwidth]{figures/fig-bs0-GER.png}}
+  {\transparent{0.2}\includegraphics[width=0.19\textwidth]{figures/fig-bs0-USA.png}}
+  {\transparent{1}\includegraphics[width=0.19\textwidth]{figures/fig-bs0-SWE.png}}
+  {\transparent{0.2}\includegraphics[width=0.19\textwidth]{figures/fig-bs0-ZAF.png}}
+  {\transparent{0.2}\includegraphics[width=0.19\textwidth]{figures/fig-bs0-ETH.png}}
   \addtocounter{framenumber}{-1}
 \end{frame}
 
@@ -1008,11 +1044,11 @@
   \end{blockarray}
   $$
   \normalsize
-  {\transparent{0.2}\includegraphics[width=0.19\textwidth]{figures/bs-tensor/fig-tensor-GER.png}}
-  {\transparent{0.2}\includegraphics[width=0.19\textwidth]{figures/bs-tensor/fig-tensor-USA.png}}
-  {\transparent{0.2}\includegraphics[width=0.19\textwidth]{figures/bs-tensor/fig-tensor-SWE.png}}
-  \includegraphics[width=0.19\textwidth]{figures/bs-tensor/fig-tensor-ZAF.png}
-  {\transparent{0.2}\includegraphics[width=0.19\textwidth]{figures/bs-tensor/fig-tensor-ETH.png}}
+  {\transparent{0.2}\includegraphics[width=0.19\textwidth]{figures/fig-bs0-GER.png}}
+  {\transparent{0.2}\includegraphics[width=0.19\textwidth]{figures/fig-bs0-USA.png}}
+  {\transparent{0.2}\includegraphics[width=0.19\textwidth]{figures/fig-bs0-SWE.png}}
+  {\transparent{1}\includegraphics[width=0.19\textwidth]{figures/fig-bs0-ZAF.png}}
+  {\transparent{0.2}\includegraphics[width=0.19\textwidth]{figures/fig-bs0-ETH.png}}
   \addtocounter{framenumber}{-1}
 \end{frame}
 
@@ -1039,11 +1075,11 @@
   \end{blockarray}
   $$
   \normalsize
-  {\transparent{0.2}\includegraphics[width=0.19\textwidth]{figures/bs-tensor/fig-tensor-GER.png}}
-  {\transparent{0.2}\includegraphics[width=0.19\textwidth]{figures/bs-tensor/fig-tensor-USA.png}}
-  \includegraphics[width=0.19\textwidth]{figures/bs-tensor/fig-tensor-SWE.png}
-  {\transparent{0.2}\includegraphics[width=0.19\textwidth]{figures/bs-tensor/fig-tensor-ZAF.png}}
-  {\transparent{0.2}\includegraphics[width=0.19\textwidth]{figures/bs-tensor/fig-tensor-ETH.png}}
+  {\transparent{0.2}\includegraphics[width=0.19\textwidth]{figures/fig-bs0-GER.png}}
+  {\transparent{0.2}\includegraphics[width=0.19\textwidth]{figures/fig-bs0-USA.png}}
+  {\transparent{1}\includegraphics[width=0.19\textwidth]{figures/fig-bs0-SWE.png}}
+  {\transparent{0.2}\includegraphics[width=0.19\textwidth]{figures/fig-bs0-ZAF.png}}
+  {\transparent{0.2}\includegraphics[width=0.19\textwidth]{figures/fig-bs0-ETH.png}}
   \addtocounter{framenumber}{-1}
 \end{frame}
 
@@ -1112,7 +1148,7 @@
             The base learner selection in each iteration is an extensive task.% due to fitting each $b_k$ to $\rmm$. 
         \item
             Gradient descent converges rather slowly compared to the optimizer like momentum or Nesterov's momentum.\\[0.2cm]
-            $\rightarrow$ Fitting the algorithm can take too much time.
+            $\rightarrow$ Fitting the algorithm can be time consuming.
     \end{itemize}
     \textbf{W.r.t. memory:}  
     \begin{itemize}
@@ -1159,154 +1195,163 @@
 
 \fSlide{Efficiency}{Accelerating component-wise boosting}
 
-\begin{frame}{Idea}
-
-  \textbf{Gradient descent:}
-
-  \vspace{0.2cm}
-  {\small
-  \begin{tabular}{ccc}
-    Parameter space & & Function space \\[0.3cm]
-    $\tbh^{[m+1]} = \tbh^{[m]} + \nu \nabla_{\tb}\riske(\fh(. | \tbh^{[m]}) | \D)$ & $\Rightarrow$ & $\fh^{[m+1]} = \fmh + \nu \hat{b}^{[m]}$
-  \end{tabular}}
-  \vspace{0.4cm}
-
-  \textbf{Nesterov's momentum:}
-
-  \vspace{0.2cm}
-  {\small
-  \begin{tabular}{ccc}
-    Parameter space & & Function space \\[0.3cm]
-    $\bm{u}^{[m]} = \nabla_{\tb}\riske(\fh(. | \tbh^{[m]} - \gamma \hat{\bm{\vartheta}}^{[m-1]}) | \D)$ &  & \\
-    $\hat{\bm{\vartheta}}^{[m]} = \gamma \hat{\bm{\vartheta}}^{[m-1]} + \nu \bm{u}^{[m]}$ & $\Rightarrow$ & ??? \\
-    $\tbh^{[m+1]} = \tbh^{[m]} + \hat{\bm{\vartheta}}^{[m]}$ & &
-  \end{tabular}}
-  \vspace{0.2cm}
-
-  \begin{itemize}
-  \item[$\Rightarrow$] \textbf{Idea:} Use Nesterov's momentum and adjust it for functional updates and CWB.
-  \end{itemize}
-
-\end{frame}
-
-\begin{frame}{Accelerated gradient boosting machine}
-  \begin{itemize}
-    \item
-      Using Nesterov's momentum in GB was first proposed by \cite{biau2019accelerated} and refined in an algorithm called Accelerated Gradient Boosting Machine (AGBM) by \cite{lu2020accelerating}:
-      \begin{align*}
-      g^{[m]} &= (1 - \theta_m) f^{[m]} + \theta_m h^{[m]}\\
-      f^{[m+1]} &= g^{[m]} + \nu b^{[m]} \\
-      h^{[m+1]} &= h^{[m]} + \nu / \theta_m b^{[m]}_{\text{cor}}
-      \end{align*}
-%    \item
-%      Incorporate these adjustments into CWB and make sure all its advantages are preserved.
-  \end{itemize}
-\end{frame}
-
-\begin{frame}{Accelerated gradient boosting machine}
-  \begin{itemize}
-    \item
-      Using Nesterov's momentum in GB was first proposed by \cite{biau2019accelerated} and refined in an algorithm called Accelerated Gradient Boosting Machine (AGBM) by \cite{lu2020accelerating}:
-      \begin{align*}
-      g^{[m]} &= (1 - \theta_m) f^{[m]} + \theta_m h^{[m]}\\
-      {\color{red}f^{[m+1]}} &=g^{[m]} + \nu b^{[m]} \\
-      {\color{blue}h^{[m+1]}} &= h^{[m]} + \nu / \theta_m b^{[m]}_{\text{cor}}
-      \end{align*}
-    \item
-      The {\color{red}\enquote{primary model} $f$} is updated w.r.t. to $g$ which is a combination of the old {\color{red}primary model $f$} and {\color{blue}\enquote{momentum model} $h$}.
-  \end{itemize}
-  \addtocounter{framenumber}{-1}
-\end{frame}
-
-\begin{frame}{Accelerated gradient boosting machine}
-  \begin{itemize}
-    \item
-      Using Nesterov's momentum in GB was first proposed by \cite{biau2019accelerated} and refined in an algorithm called Accelerated Gradient Boosting Machine (AGBM) by \cite{lu2020accelerating}:
-      \begin{align*}
-      g^{[m]} &= (1 - \theta_m) f^{[m]} + \theta_m h^{[m]}\\
-      f^{[m+1]} &=g^{[m]} + \eta {\color{red}b^{[m]}} \\
-      {\color{black}h^{[m+1]}} &{\color{black}\hspace{0.1cm}= h^{[m]} + \eta / \theta_m b^{[m]}_{\text{cor}}}
-      \end{align*}
-    \item
-      The base learner $\textcolor{red}{b^{[m]}}$ added to the primary model is fitted to pseudo residuals $\rmm$ w.r.t. $\hat{g}^{[m-1]}$.
-  \end{itemize}
-  \addtocounter{framenumber}{-1}
-\end{frame}
-
-\begin{frame}{Accelerated gradient boosting machine}
-  \begin{itemize}
-    \item
-      Using Nesterov's momentum in GB was first proposed by \cite{biau2019accelerated} and refined in an algorithm called Accelerated Gradient Boosting Machine (AGBM) by \cite{lu2020accelerating}:
-      \begin{align*}
-      g^{[m]} &= (1 - \theta_m) f^{[m]} + \theta_m h^{[m]}\\
-      f^{[m+1]} &=g^{[m]} + \eta b^{[m]} \\
-      h^{[m+1]} &= h^{[m]} + \eta / \theta_m \textcolor{blue}{b^{[m]}_{\text{cor}}}
-      \end{align*}
-    \item
-      A second base learner $\textcolor{blue}{b^{[m]}_{\text{cor}}}$ is fitted to \enquote{error-corrected pseudo residuals} $\bm{c}^{[m]}$:
-      \[c^{[m](i)} = \rmi + \frac{m}{m+1}(c^{[m-1](i)} - \hat{b}_{\text{cor}}^{[m-1]}(\xi))\]
-      This accelerates the fitting into the direction of $\bm{c}^{[m]}$.
-  \end{itemize}
-  \addtocounter{framenumber}{-1}
-\end{frame}
-
-\begin{frame}{Accelerated gradient boosting machine}
-  \begin{itemize}
-    \item
-      Using Nesterov's momentum in GB was first proposed by \cite{biau2019accelerated} and refined in an algorithm called Accelerated Gradient Boosting Machine (AGBM) by \cite{lu2020accelerating}:
-      \begin{align*}
-      g^{[m]} &= (1 - \theta_m) f^{[m]} + \theta_m h^{[m]}\\
-      f^{[m+1]} &=g^{[m]} + \eta \textcolor{red}{b^{[m]}} \\
-      h^{[m+1]} &= h^{[m]} + \eta / \theta_m \textcolor{blue}{b^{[m]}_{\text{cor}}}
-      \end{align*}
-    \item
-      \textbf{Note:} Each iteration requires to fit two base learners \textcolor{red}{$b^{[m]}$} and \textcolor{blue}{$b^{[m]}_{\text{cor}}$} $\Rightarrow$ Fitting time is doubled.
-  \end{itemize}
-  \addtocounter{framenumber}{-1}
-\end{frame}
-
-%\begin{frame}{Base learners in AGBM}
-%  \begin{itemize}
-%    \item
-%      \(b^{[m]}\) is fitted to pseudo residuals \(\rmm\) w.r.t.
-%      \(\hat{g}^{[m-1]}\) instead of \(\fmh\).
+%\begin{frame}{Idea}
 %
-%    \item
-%      AGBM introduces a second base learner $b^{[m]}_{\text{cor}}$ that is fitted to error-corrected pseudo residuals:
-%      \[c^{[m](i)} = \rmi + \frac{m}{m+1}(c^{[m-1](i)} - \hat{b}_{\text{cor}}^{[m-1]}(\xi)),\]
-%      with \(i = 1, \dots, n\), if \(m > 1\) and \(\bm{c}^{[m]} = \rmm\) if
-%      \(m = 0\).\\[0.2cm]
-%      $\Rightarrow$ Each iteration adds but two base learners $b^{[m]}$ and $b^{[m]}_{\text{cor}}$:
-%      \begin{itemize}
-%        \item $b^{[m]}_{\text{cor}}$ defines the momentum sequence to accelerate the fitting into the direction of the error-corrected pseudo residuals
-%        \item Computing a second base learner also means two double the runtime for the same number of iterations.
-%      \end{itemize}
+%  \textbf{Gradient descent:}
+%
+%  \vspace{0.2cm}
+%  {\small
+%  \begin{tabular}{ccc}
+%    Parameter space & & Function space \\[0.3cm]
+%    $\tbh^{[m+1]} = \tbh^{[m]} + \nu \nabla_{\tb}\riske(\fh(. | \tbh^{[m]}) | \D)$ & $\Rightarrow$ & $\fh^{[m+1]} = \fmh + \nu \hat{b}^{[m]}$
+%  \end{tabular}}
+%  \vspace{0.4cm}
+%
+%  \textbf{Nesterov's momentum:}
+%
+%  \vspace{0.2cm}
+%  {\small
+%  \begin{tabular}{ccc}
+%    Parameter space & & Function space \\[0.3cm]
+%    $\bm{u}^{[m]} = \nabla_{\tb}\riske(\fh(. | \tbh^{[m]} - \gamma \hat{\bm{\vartheta}}^{[m-1]}) | \D)$ &  & \\
+%    $\hat{\bm{\vartheta}}^{[m]} = \gamma \hat{\bm{\vartheta}}^{[m-1]} + \nu \bm{u}^{[m]}$ & $\Rightarrow$ & ??? \\
+%    $\tbh^{[m+1]} = \tbh^{[m]} - \hat{\bm{\vartheta}}^{[m]}$ & &
+%  \end{tabular}}
+%  \vspace{0.2cm}
+%
+%  \begin{itemize}
+%  \item[$\Rightarrow$] \textbf{Idea:} Use Nesterov's momentum and adjust it for functional updates and CWB.
 %  \end{itemize}
+%
 %\end{frame}
 
-
-\begin{frame}{Accelerated component-wise boosting}
-  In \citet{schalk2022accelerated}, we introduced an accelerated CWB (ACWB)
-  version by incorporating AGBM:
-
+\begin{frame}{Accelerated gradient boosting machine}
   \begin{itemize}
     \item
-      Both base learners, \(b^{[m]}\) and \(b^{[m]}_{\text{cor}}\), are the
-      result of a selection process that chooses one of \(b_1, \dots, b_K\)
-      w.r.t. to the minimal SSE on the respective pseudo residuals \(\rmm\)
-      and \(\bm{c}^{[m]}\).
-    \item
-      Update the estimated parameters accordingly to allow the estimation of
-      partial feature effects.
+      Applying Nesterov's momentum in GB was already proposed by \cite{biau2019accelerated} and refined in an algorithm called Accelerated Gradient Boosting Machine (AGBM) by \cite{lu2020accelerating}:
+      \begin{alignat*}{2}
+      g^{[m]} &= (1 - \theta_m) f^{[m]} + \theta_m h^{[m]}             &&\\
+      f^{[m+1]} &= g^{[m]} + \nu b^{[m]}                               &&\text{primary model}\\
+      h^{[m+1]} &= h^{[m]} + \gamma\nu / \theta_m b^{[m]}_{\text{cor}} &&\text{momentum model}
+      \end{alignat*}
   \end{itemize}
-  Considering these points allows maintaining all advantages of CWB in
-  ACWB. Details are outlined in the publication.
+\end{frame}
+
+\begin{frame}{Accelerated gradient boosting machine}
+  \begin{itemize}
+    \item
+      Applying Nesterov's momentum in GB was already proposed by \cite{biau2019accelerated} and refined in an algorithm called Accelerated Gradient Boosting Machine (AGBM) by \cite{lu2020accelerating}:
+      \begin{alignat*}{2}
+      {\color{gray}g^{[m]}} &{\color{gray}\hspace{0.08cm}= (1 - \theta_m) f^{[m]} + \theta_m h^{[m]}}             &&\\
+      f^{[m+1]} &= g^{[m]} + \nu b^{[m]}                               &&\text{primary model}\\
+      {\color{gray}h^{[m+1]}} &{\color{gray}\hspace{0.08cm}= h^{[m]} + \gamma\nu / \theta_m b^{[m]}_{\text{cor}}} &&{\color{gray}\text{momentum model}}
+      \end{alignat*}
+  \end{itemize}
+  \addtocounter{framenumber}{-1}
+\end{frame}
+
+\begin{frame}{Accelerated gradient boosting machine}
+  \begin{itemize}
+    \item
+      Applying Nesterov's momentum in GB was already proposed by \cite{biau2019accelerated} and refined in an algorithm called Accelerated Gradient Boosting Machine (AGBM) by \cite{lu2020accelerating}:
+      \begin{alignat*}{2}
+      {\color{gray}g^{[m]}} &{\color{gray}\hspace{0.08cm}= (1 - \theta_m) f^{[m]} + \theta_m h^{[m]}}             &&\\
+      f^{[m+1]} &= g^{[m]} + \nu b^{[m]}                               &&\text{primary model}\\
+      {\color{gray}h^{[m+1]}} &{\color{gray}\hspace{0.08cm}= h^{[m]} + \gamma\nu / \theta_m} {\color{blue}b^{[m]}_{\text{cor}}} &&{\color{gray}\text{momentum model}}
+      \end{alignat*}
+      \item A {\color{blue}second base learner $b^{[m]}_{\text{cor}}$} is fitted to the accumulated previous errors (\enquote{error-corrected pseudo residuals}) to accelerate the fitting into that direction.
+  \end{itemize}
+  \addtocounter{framenumber}{-1}
+\end{frame}
+
+\begin{frame}{Accelerated gradient boosting machine}
+  \begin{itemize}
+    \item
+      Applying Nesterov's momentum in GB was already proposed by \cite{biau2019accelerated} and refined in an algorithm called Accelerated Gradient Boosting Machine (AGBM) by \cite{lu2020accelerating}:
+      \begin{alignat*}{2}
+      g^{[m]} &= (1 - \theta_m) f^{[m]} + \theta_m h^{[m]} &&\\
+      f^{[m+1]} &= g^{[m]} + \nu {\color{red}b^{[m]}} &&\text{primary model}\\
+      h^{[m+1]} &= h^{[m]} + \gamma\nu / \theta_m {\color{blue}b^{[m]}_{\text{cor}}}&&\text{momentum model}
+      \end{alignat*}
+%      \[\Rightarrow\ f^{[m+1]} = f^{[m]} + \nu b^{[m]} + \theta_m (h^{[m]} - f^{[m]})\]%\vspace{0.1cm}
+%    \item Momentum in the direction of $h^{[m]} - f^{[m]}$.
+    \item A {\color{blue}second base learner $b^{[m]}_{\text{cor}}$} is fitted to the accumulated previous errors (\enquote{error-corrected pseudo residuals}) to accelerate the fitting into that direction.
+    \item In each iteration, two base learners ${\color{red}b^{[m]}}$ and ${\color{blue}b^{[m]}_{\text{cor}}}$ are fitted.
+    %\item ($\theta_m = 2 / (m+2),\ m = 0, \dots, M - 1$, momentum $\gamma \in (0,1]$)
+  \end{itemize}
+  \addtocounter{framenumber}{-1}
+\end{frame}
+
+%\begin{frame}{Accelerated gradient boosting machine}
+%  \begin{itemize}
+%    \item
+%      Applying Nesterov's momentum in GB was already proposed by \cite{biau2019accelerated} and refined in an algorithm called Accelerated Gradient Boosting Machine (AGBM) by \cite{lu2020accelerating}:
+%      \begin{align*}
+%      g^{[m]} &= (1 - \theta_m) f^{[m]} + \theta_m h^{[m]}\\
+%      f^{[m+1]} &= g^{[m]} + \nu b^{[m]} \\
+%      h^{[m+1]} &= h^{[m]} + \gamma\nu / \theta_m b^{[m]}_{\text{cor}}
+%      \end{align*}
+%      \[\Rightarrow\ f^{[m+1]} = f^{[m]} + \nu b^{[m]} + \theta_m (h^{[m]} - f^{[m]})\]%\vspace{0.1cm}
+%  \end{itemize}
+%  \addtocounter{framenumber}{-1}
+%\end{frame}
+%
+%\begin{frame}{Accelerated gradient boosting machine}
+%  \begin{itemize}
+%    \item
+%      Applying Nesterov's momentum in GB was already proposed by \cite{biau2019accelerated} and refined in an algorithm called Accelerated Gradient Boosting Machine (AGBM) by \cite{lu2020accelerating}:
+%      \begin{align*}
+%      g^{[m]} &= (1 - \theta_m) f^{[m]} + \theta_m h^{[m]}\\
+%      f^{[m+1]} &= g^{[m]} + \nu b^{[m]} \\
+%      h^{[m+1]} &= h^{[m]} + \gamma\nu / \theta_m b^{[m]}_{\text{cor}}
+%      \end{align*}
+%      \[\Rightarrow\ f^{[m+1]} = f^{[m]} + \nu b^{[m]} + {\color{red}\theta_m (h^{[m]} - f^{[m]})}\]%\vspace{0.1cm}
+%    \item Momentum in the direction of ${\color{red}h^{[m]} - f^{[m]}}$.
+%  \end{itemize}
+%  \addtocounter{framenumber}{-1}
+%\end{frame}
+%
+%\begin{frame}{Accelerated gradient boosting machine}
+%  \begin{itemize}
+%    \item
+%      Applying Nesterov's momentum in GB was already proposed by \cite{biau2019accelerated} and refined in an algorithm called Accelerated Gradient Boosting Machine (AGBM) by \cite{lu2020accelerating}:
+%      \begin{align*}
+%      g^{[m]} &= (1 - \theta_m) f^{[m]} + \theta_m h^{[m]}\\
+%      f^{[m+1]} &= g^{[m]} + \nu {\color{red}b^{[m]}} \\
+%      h^{[m+1]} &= h^{[m]} + \gamma\nu / \theta_m {\color{blue}b^{[m]}_{\text{cor}}}
+%      \end{align*}
+%      \[\Rightarrow\ f^{[m+1]} = f^{[m]} + \nu b^{[m]} + \theta_m (h^{[m]} - f^{[m]})\]%\vspace{0.1cm}
+%    \item Momentum in the direction of $h^{[m]} - f^{[m]}$.
+%    \item In each iteration, two base learners ${\color{red}b^{[m]}}$ and ${\color{blue}b^{[m]}_{\text{cor}}}$.
+%    \item ($\theta_m = 2 / (m+2),\ m = 0, \dots, M - 1$, momentum $\gamma \in (0,1]$)
+%  \end{itemize}
+%  \addtocounter{framenumber}{-1}
+%\end{frame}
+
+\begin{frame}{Accelerated component-wise boosting}
+  In \citet{schalk2022accelerated}, we incorporated the updating scheme of AGBM into an accelerated CWB (ACWB)
+  version:
+  \begin{itemize}
+    \item
+      Both base learners \(b^{[m]}\in\{b_1, \dots, b_K\}\) and \(b^{[m]}_{\text{cor}}\in\{b_1, \dots, b_K\}\) that are added in one iteration are the
+      result of a selection process w.r.t. to the minimal SSE.
+    \item
+      Update the parameter estimations accordingly to allow the estimation of partial feature effects.
+  \end{itemize}
+  Considering these points allows maintaining all advantages of CWB in ACWB.
+\end{frame}
+
+\begin{frame}{ACWB Algorithm}
+   \begin{figure}
+       \centering
+       \includegraphics[width=0.85\textwidth]{figures/fig-acwb.png}
+   \end{figure} 
 \end{frame}
 
 \begin{frame}{Hybrid component-wise boosting}
   \begin{itemize}
     \item
-      \citet{lu2020accelerating} showed that ACWB can overfit if not stopped early.
+      ACWB can overfit or overshoot an optimal solution if not stopped early.
     \item
       Therefore, a hybrid CWB (HCWB) approach combines ACWB for an accelerated fitting in the beginning and CWB
       to fine-tune the model:
@@ -1315,6 +1360,7 @@
   \begin{figure}
     \centering
     \includegraphics[width=0.6\textwidth]{figures/fig-HCWB.pdf}
+    \caption{\small(Figure reference: \citet{schalk2022accelerated})}
   \end{figure}
 \end{frame}
 
@@ -1358,7 +1404,7 @@
   \end{itemize}
 \end{frame}
 
-\begin{frame}{Initializing a base leanrer with binning}
+\begin{frame}{Initializing a base learner with binning}
   \begin{minipage}{0.85\textwidth}
     {\tiny $\underbrace{\begin{pmatrix} 234 \\ 73 \\ 498 \\ \vdots \\ 112 \\ 261 \\ 343 \end{pmatrix}}_{= \bm{x}_{k}\in\R^n}$}
     {\normalsize $\Rightarrow$}
@@ -1388,7 +1434,7 @@
   \end{minipage}
 \end{frame}
 
-\begin{frame}{Initializing a base leanrer with binning}
+\begin{frame}{Initializing a base learner with binning}
   \begin{minipage}{0.85\textwidth}
     {\tiny $\underbrace{\begin{pmatrix} 234 \\ 73 \\ 498 \\ \vdots \\ 112 \\ 261 \\ 343 \end{pmatrix}}_{= \bm{x}_{k}\in\R^n}$}
     {\transparent{0.2}\normalsize $\Rightarrow$}
@@ -1421,7 +1467,7 @@
 \end{frame}
 
 
-\begin{frame}{Initializing a base leanrer with binning}
+\begin{frame}{Initializing a base learner with binning}
   \begin{minipage}{0.85\textwidth}
     {\tiny $\underbrace{\begin{pmatrix} 234 \\ 73 \\ 498 \\ \vdots \\ 112 \\ 261 \\ 343 \end{pmatrix}}_{= \bm{x}_{k}\in\R^n}$}
     {\transparent{0.2}\normalsize $\Rightarrow$}
@@ -1475,7 +1521,7 @@
   \addtocounter{framenumber}{-1}
 \end{frame}
 
-\begin{frame}{Initializing a base leanrer with binning}
+\begin{frame}{Initializing a base learner with binning}
   \begin{minipage}{0.85\textwidth}
     {\tiny $\underbrace{\begin{pmatrix} 234 \\ 73 \\ 498 \\ \vdots \\ 112 \\ 261 \\ 343 \end{pmatrix}}_{= \bm{x}_{k}\in\R^n}$}
     {\transparent{0.2}\normalsize $\Rightarrow$}
@@ -1612,23 +1658,37 @@
 %  \end{minipage}
 %\end{frame}
 
+\newcommand{\bmult}{\ast_b}
+\newcommand{\bfun}{m_M}
+
 \begin{frame}{Binning in CWB}
-  %\todo Hier nochmal alles zusammenschreiben, also wieso passt es gut zu CWB, wie wird es eingebaut etc. Hier muss ich etwas länger drüber reden, das ist ja wa sich quasi gemacht habe.
-  \begin{itemize}
-      \item 
-        Each (univariate) base learner $b_k$ can apply binning individually.
+    Each (univariate) base learner $b_k$ can apply binning individually to:
+    \begin{itemize}
+        \item 
+            Reduce the memory consumption of $\design_k$.% from $nd_k$ double values to $n^\ast d_k$ double values plus an $n$ valued integer vector\footnote[frame,1]{Applies for dense matrices, the memory savings are different for saving sparse matrices}.\begin{itemize}
+%                \item[$\Rightarrow$] E.g., $n = 100\phantom{.}000$, $d_k = 24$ requires $\approx 18.31$ MB without and $0.44$ MB with binning to store one $\design_k$ for $n^\ast = \sqrt{n}$.
+%            \end{itemize}
+        
+        \item
+            Use optimized matrix operations $m_M$ and $m_v$ based on binning:
+            \begin{itemize}
+                \item 
+                    Speed up the \textbf{model initialization}: Calculation of information that do not depend on $m$ like $\design^\ast_1, \dots, \design^\ast_K$ and $\bm{F}_k^{-1} = (m_M(\design_k^{\ast}, \design_k^\ast) + \penMat_k)^{-1}$, that do not depend on $m$ prior to the fitting
+                \item 
+                    Speed up the \textbf{fitting process}: Estimate parameter with $\tbmh_k = \bm{F}_k^{-1} m_v(\design_k^\ast, \rmm)$ 
+            \end{itemize}
       
-      \item 
-        In the \textbf{initialization}, each base learner calculates \[\xv_k \rightarrow \bm{z}_k \rightarrow \bm{Z}_k^\ast \rightarrow \bm{L}_k = \operatorname{chol}(\operatorname{binMatMat}(\design^{\ast}_k, \design^\ast_k) + \penMat_k).\]\vspace{-0.5cm}
-        \begin{itemize}
-            \item[$\Rightarrow$] Using $\operatorname{binMatMat}$ reduces the number of operations in the initialization from $K(d^2n + d^3)$ to $K(d^2n^\ast + n + d^3)$. 
-        \end{itemize}\vspace{0.2cm}
-      
-      \item 
-        During the \textbf{fitting}, the base learner estimates the parameter with \[\tbmh_k = \operatorname{cholSolve}(\bm{L}_k, \operatorname{binMatVec}(\design^{\ast\tran}_k, \rmm)).\]\vspace{-0.5cm}
-        \begin{itemize}
-            \item[$\Rightarrow$] Using $\operatorname{binMatVec}$ reduces the number of operations in each iteration from $K(d^2 + dn)$ to $K(d^2n + dn^\ast + n)$. 
-        \end{itemize}
+%      \item 
+%        In the \textbf{initialization}, each base learner calculates \[\xv_k \rightarrow \bm{z}_k \rightarrow \bm{Z}_k^\ast \rightarrow \bm{L}_k = \operatorname{chol}(\operatorname{binMatMat}(\design^{\ast}_k, \design^\ast_k) + \penMat_k).\]\vspace{-0.5cm}
+%        \begin{itemize}
+%            \item[$\Rightarrow$] Using $\operatorname{binMatMat}$ reduces the number of operations in the initialization from $K(d^2n + d^3)$ to $K(d^2n^\ast + n + d^3)$. 
+%        \end{itemize}\vspace{0.2cm}
+%      
+%      \item 
+%        During the \textbf{fitting}, the base learner estimates the parameter with \[\tbmh_k = \operatorname{cholSolve}(\bm{L}_k, \operatorname{binMatVec}(\design^{\ast\tran}_k, \rmm)).\]\vspace{-0.5cm}
+%        \begin{itemize}
+%            \item[$\Rightarrow$] Using $\operatorname{binMatVec}$ reduces the number of operations in each iteration from $K(d^2 + dn)$ to $K(d^2n + dn^\ast + n)$. 
+%        \end{itemize}
   \end{itemize}
 \end{frame}
 
@@ -1645,21 +1705,28 @@
 \begin{frame}{Benchmark comparisons of CWB variants}
   \begin{figure}
     \centering
-    \includegraphics[width=\textwidth]{figures/fig-cacb-benchmark.pdf}
-  \end{figure}
+    \includegraphics[width=0.8\textwidth]{figures/fig-cacb-benchmark.pdf}
+    \caption{\small(Figure\footnote[frame,1]{5-fold cross-validation with early stopping in each fold.} reference: \citet{schalk2022accelerated})}
+  \end{figure}\vspace{-0.3cm}
+  \begin{itemize}
+      \item Using binning improves the runtime.
+      \item Accelerating CWB can speed up the training time further without sacrificing predictive performance.
+  \end{itemize}
+  %{\scriptsize 5-fold cross-validation with early stopping in each fold.}
 \end{frame}
 
 \begin{frame}{Memory consumption for bigger data sets}
   \begin{figure}
     \centering
-    \includegraphics[width=0.9\textwidth]{figures/fig-cacb-big-data.pdf}
+    \includegraphics[width=0.8\textwidth]{figures/fig-cacb-big-data.pdf}
+    \caption{\small(Figure\footnote[frame,1]{Fitting was conducted for 50 iterations.} reference: \citet{schalk2022accelerated})}
   \end{figure}\vspace{-0.5cm}
   \begin{itemize}
       \item \textbf{Higgs}: 2.4 GB, $n = 11\cdot 10^6$, $p = 29$ (all numeric)
       \item \textbf{NYC Taxi}: 3.3 GB, $n = 24.3\cdot 10^6$, $p = 22$ (all numeric)
       \item \textbf{Flood Insurance}: 3.4 GB, $n = 14.5\cdot 10^6$, $p = 50$ (29 are numeric)
   \end{itemize} 
-  {\scriptsize Fitting was conducted for 50 iterations.}
+  %{\scriptsize Fitting was conducted for 50 iterations.}
 \end{frame}
 
 %\begin{frame}{Summary and Outlook}
@@ -1752,7 +1819,7 @@
   What is allowed to be shared?
   \begin{itemize}
     \item Aggregated data that does not allow reconstructing parts of the original data set.
-    \item Encrypted data (e.g. via homomorphic encription~\citep{gentry2009fully}).
+    \item Encrypted data.% (e.g. via homomorphic encription~\citep{gentry2009fully}).
   \end{itemize}
   \end{itemize}
   \addtocounter{framenumber}{-1}
@@ -1768,7 +1835,7 @@
   What is allowed to be shared?
   \begin{itemize}
     \item Aggregated data that does not allow reconstructing parts of the original data set.
-    \item Encrypted data (e.g. via homomorphic encription~\citep{gentry2009fully}).
+    \item Encrypted data
   \end{itemize}
   \end{itemize}
   $\Rightarrow$ Is it still possible to fit a model with CWB?
@@ -1790,7 +1857,7 @@
 %  \end{itemize}
 %\end{frame}
 
-\begin{frame}{Publication [4]}
+\begin{frame}{Publication \citep{schalk2022distcwb}}
   \vspace{-0.2cm}
   \begin{figure}
     \centering
@@ -1802,44 +1869,98 @@
     \item
       Provide a \textbf{distributed, privacy-preserving, and lossless CWB algorithm}: \[\operatorname{distCWB}(\mathcal{D}_1, \dots, \mathcal{D}_\nSites) = \operatorname{CWB}(\mathcal{D})\]
     \item
-      \textbf{Allow for site-specific corrections} get a deeper understanding of the distributed data.
+      \textbf{Allow for site-specific corrections} to account for heterogeneity in the data.
   \end{itemize}
 
 \end{frame}
 
 \begin{frame}{Site-specific vs. main effects}
-  %\todo Auf main oder shared festlegen?
   \begin{itemize}
-%    \item
-%      \textbf{Reminder:} CWB can be used to fit a GAM $f(\xv) = f_0 + \sum_{k=1}^K b_k(\xv)$ with the base learners $b_k$ as additive terms.
     \item
-      In the distributed setup, we denote $b_k$ as shared or main effect that is equal between all sites.
-
+      In the distributed setup, we denote $b_k$ as \textbf{shared} or \textbf{main effect} that is equal between all sites.
     \item
-      Further, a main effects $b_k$ is extended by site-specific effects $b_{k,s}$ that allow a site-specific correction of the shared effect.
+      Further, a main effects $b_k$ is extended by \textbf{site-specific effects} $b_{k,s}$ to allow a site-specific correction.
   \end{itemize}
-%  The final model assembles both, common shared and site specific effects:
-  \[f(\xv) = f_0 + \sum_{k=1}^K\left(b_k(\xv) + \sum_{s=1}^S b_{k,s}(\xv)\right) = f_0 + \sum_{k=1}^K \underbrace{b_k(\xv)}_{\text{main effect}} + \underbrace{(b_k \odot b_0)(\xv)}_{=b_{\lsite},\ \substack{\text{site-specific} \\ \text{effects}}}\]
-  \begin{itemize}
-        \item 
-            Equal to CWB with base learners $b_1, \dots, b_K$ and 
-        \item 
-            RWTP base learners $b_{\lsite} = b_k \odot b_0$, $k = 1, \dots, K$, with $b_0$ a latent base learner modelling a categorical site feature $x_0\in\{1, \dots, S\}$.
-  \end{itemize}
-  %This structure is equal to CWB with base learner $b_k$, $k = 1, \dots, K$, and RWTP base learners $b_{\lsite} = b_k \odot b_0$, $k = 1, \dots, K$, with $b_0$ a latent one hot encoded categorical base learner modelling the $S$ sites.
 \end{frame}
 
-%\begin{frame}{Component-wise boosting as fitting engine}
-  %\begin{itemize}
-    %\item CWB can be used to fit the a model related to equation xyz
-    %\item Simply achieved by:
-      %\begin{itemize}
-        %\item Assuming a latent categorical feature for the sites
-        %\item Use one base learner for the features to model the whole feature effect
-        %\item and a tensor product base learner between all fetures and the latent categorical feature to estimate site-specific effects.
-      %\end{itemize}
-    %\item Adaption to distributed data requires to fit the base learners to distributed data.
-  %\end{itemize}
+\begin{frame}{Site-specific vs. main effects}
+  \begin{itemize}
+    \item
+      In the distributed setup, we denote $b_k$ as {\color{red}\textbf{shared} or \textbf{main effect}} that is equal between all sites.
+    \item
+      Further, a main effects $b_k$ is extended by \textbf{site-specific effects} $b_{k,s}$ to allow a site-specific correction.
+  \end{itemize}
+    \vspace{-0.2cm}
+  \begin{align*}
+  f(\xv|s) &= f_0 + \sum_{k=1}^K\left({\color{red}b_k(\xv|\tb_k)} \ {\color{lightgray}+ \sum_{s^\prime=1}^S  \mathds{1}_{\{s = s^\prime\}}b_{k,s}(\xv|\tb_{\lsite,s})}\right) \\
+  &= f_0 + \sum_{k=1}^K \underbrace{{\color{red}b_k(\xv|\tb_k)}}_{\text{main effect}} \ {\color{lightgray}+ \underbrace{(b_0 \odot b_k)(\xv|\tb_{\lsite})}_{=b_{\lsite},\ \substack{\text{site-specific} \\ \text{effects}}}}
+  \end{align*}\vspace{-0.4cm}
+  \begin{itemize}
+        \item 
+            Equal to {\color{red}CWB with base learners $b_1, \dots, b_K$} 
+  \end{itemize}
+  \addtocounter{framenumber}{-1}
+\end{frame}
+
+\begin{frame}{Site-specific vs. main effects}
+  \begin{itemize}
+    \item
+      In the distributed setup, we denote $b_k$ as {\color{red}\textbf{shared} or \textbf{main effect}} that is equal between all sites.
+    \item
+      Further, a main effects $b_k$ is extended by {\color{blue}\textbf{site-specific effects} $b_{k,s}$} to allow a site-specific correction.
+  \end{itemize}
+    \vspace{-0.2cm}
+  \begin{align*}
+  f(\xv|s) &= f_0 + \sum_{k=1}^K\left({\color{red}b_k(\xv|\tb_k)} + {\color{blue} \sum_{s^\prime=1}^S  \mathds{1}_{\{s = s^\prime\}}b_{k,s}(\xv|\tb_{\lsite,s})}\right) \\
+  &= f_0 + \sum_{k=1}^K \underbrace{{\color{red}b_k(\xv|\tb_k)}}_{\text{main effect}} + \underbrace{{\color{blue}(b_0 \odot b_k)(\xv|\tb_{\lsite})}}_{=b_{\lsite},\ \substack{\text{site-specific} \\ \text{effects}}}
+  \end{align*}\vspace{-0.4cm}
+  \begin{itemize}
+        \item 
+            Equal to {\color{red}CWB with base learners $b_1, \dots, b_K$} 
+  \end{itemize}
+  \addtocounter{framenumber}{-1}
+\end{frame}
+
+\begin{frame}{Site-specific vs. main effects}
+  \begin{itemize}
+    \item
+      In the distributed setup, we denote $b_k$ as {\color{red}\textbf{shared} or \textbf{main effect}} that is equal between all sites.
+    \item
+      Further, a main effects $b_k$ is extended by {\color{blue}\textbf{site-specific effects} $b_{k,s}$} to allow a site-specific correction.
+  \end{itemize}
+    \vspace{-0.2cm}
+  \begin{align*}
+  f(\xv|s) &= f_0 + \sum_{k=1}^K\left({\color{red}b_k(\xv|\tb_k)} + {\color{blue} \sum_{s^\prime=1}^S  \mathds{1}_{\{s = s^\prime\}}b_{k,s}(\xv|\tb_{\lsite,s})}\right) \\
+  &= f_0 + \sum_{k=1}^K \underbrace{{\color{red}b_k(\xv|\tb_k)}}_{\text{main effect}} + \underbrace{{\color{blue}(b_0 \odot b_k)(\xv|\tb_{\lsite})}}_{=b_{\lsite},\ \substack{\text{site-specific} \\ \text{effects}}}
+  \end{align*}\vspace{-0.4cm}
+  \begin{itemize}
+        \item 
+            Equal to {\color{red}CWB with base learners $b_1, \dots, b_K$} and 
+        \item 
+            {\color{blue}RWTP base learners $b_{\lsite} = b_0 \odot b_k$}, $k = 1, \dots, K$, with $b_0$ modelling a latent categorical feature site $x_0\in\{1, \dots, S\}$.
+  \end{itemize}
+  \addtocounter{framenumber}{-1}
+\end{frame}
+
+%\begin{frame}{Site-specific vs. main effects}
+%  \begin{itemize}
+%    \item
+%      In the distributed setup, we denote $b_k$ as \textbf{shared} or \textbf{main effect} that is equal between all sites.
+%    \item
+%      Further, a main effects $b_k$ is extended by \textbf{site-specific effects} $b_{k,s}$ to allow a site-specific correction.
+%  \end{itemize}
+%    \vspace{-0.2cm}
+%  \begin{align*}
+%  f(\xv|s) &= f_0 + \sum_{k=1}^K\left(b_k(\xv|\tb_k) + \sum_{s^\prime=1}^S  \mathds{1}_{\{s = s^\prime\}}b_{k,s}(\xv|\tb_{\lsite,s})\right) \\
+%  &= f_0 + \sum_{k=1}^K \underbrace{b_k(\xv|\tb_k)}_{\text{main effect}} + \underbrace{(b_0 \odot b_k)(\xv|\tb_{\lsite})}_{=b_{\lsite},\ \substack{\text{site-specific} \\ \text{effects}}}
+%  \end{align*}\vspace{-0.4cm}
+%  \begin{itemize}
+%        \item 
+%            Equal to CWB with base learners $b_1, \dots, b_K$ and 
+%        \item 
+%            RWTP base learners $b_{\lsite} = b_0 \odot b_k$, $k = 1, \dots, K$, with $b_0$ modelling a latent categorical feature site $x_0\in\{1, \dots, S\}$.
+%  \end{itemize}
+%  \addtocounter{framenumber}{-1}
 %\end{frame}
 
 \fSlide{Distributed CWB}{Estimation of main effects}
@@ -1914,10 +2035,14 @@
     \item Finally, the host can estimate $\tbh_k^{[m]} = (\bm{F}_k + \penMat_k)^{-1} \bm{u}_k$.
   \end{itemize}
   \tikz[remember picture, overlay] \node[anchor=center] at ($(current page.center)-(0,1.1)$) {\includegraphics[width=0.7\textwidth]{figures/distr-lm-iter4.png}};
-  %\begin{figure}
-    %\centering
-    %\includegraphics[width=0.6\textwidth]{figures/distr-lm-iter4.png}
-  %\end{figure}
+	\addtocounter{framenumber}{-1}%
+\end{frame}
+
+\begin{frame}{Estimation of main effects}
+  \begin{itemize}
+    \item Finally, the host can estimate $\tbh_k^{[m]} = (\bm{F}_k + \penMat_k)^{-1} \bm{u}_k$. (The estimated main effects must be communicated back to sites to update the pseudo residuals $\rmm_k$.) 
+  \end{itemize}
+  \tikz[remember picture, overlay] \node[anchor=center] at ($(current page.center)-(0,1.1)$) {\includegraphics[width=0.7\textwidth]{figures/distr-lm-iter5.png}};
 	\addtocounter{framenumber}{-1}%
 \end{frame}
 
@@ -1945,7 +2070,6 @@
     \end{algorithmic}
   \end{algorithm}
   \normalsize
-	\addtocounter{framenumber}{-1}%
 \end{frame}
 
 \begin{frame}{Estimation of main effects}
@@ -1994,8 +2118,8 @@
       \While{$m \leq M$}
           \State $\rmi = -\left.\pd{\Lxyi}{f(\xi)}\right|_{f = \fmdh},\ \ \forall i \in \{1, \dots, n\}$
           \For{$\blk \in \{1, \dots, \blK\}$}\tikzmk{B}\boxtrans
-              \State \tikzmk{A}$\tbmh_\blk = \operatorname{distFit(\design_{k,1}, \dots, \design_{k,\nSites}, \rmm_1, \rmm_\nSites, \penMat_k)}$\tikzmk{B}\boxittwo{olivedrab}
-              \State \tikzmk{A}$\sse_\blk = \sum_{i=1}^n(\rmi - b_\blk(\xi | \tbmh_\blk))^2$
+              \State \tikzmk{A}$\tbmh_\blk = \operatorname{distFit(\design_{k,1}, \dots, \design_{k,\nSites}, \rmm_1, \dots, \rmm_\nSites, \penMat_k)}$\tikzmk{B}\boxittwo{olivedrab}
+              \State \tikzmk{A}$\sse_\blk = \operatorname{aggregate}(\operatorname{get}(\sse_{k,1}, \dots, \sse_{k,\nSites}))$
           \EndFor
           \State $\blk^{[m]} = \argmin_{\blk\in\{1, \dots, \blK\}} \sse_\blk$
           \State $\fmh(\xv) = \fmdh(\xv) + \nu b_{\blk^{[m]}} (\xv | \tbmh_{\blk^{[m]}})$\tikzmk{B}\boxtranstwo
@@ -2004,6 +2128,8 @@
   \EndProcedure
   \end{algorithmic}
   \end{algorithm}
+  \vspace{-0.6cm}
+  {\small\textbf{Note:} The communication costs are a third resource that affects the efficiency.}
   \addtocounter{framenumber}{-1}
 \end{frame}
 
@@ -2012,7 +2138,7 @@
 \fSlide{Distributed CWB}{Estimation of site-specific effects}
 
 \begin{frame}{Estimation of site-specific effects}
-  \textbf{Example:} Without sharing sensitive data, we want to esitmate site-specific effects (e.g. for \texttt{BMI}):
+  \textbf{Example:} Without sharing sensitive data, we want to estimate site-specific effects (e.g. for \texttt{BMI}):
   \begin{figure}
     \centering
     \includegraphics[width=0.7\textwidth]{figures/fig-site-effects.png}
@@ -2070,6 +2196,7 @@
 
 
 \begin{frame}{Estimation of site-specific effects}
+  \vspace{-0.2cm}
   \begin{algorithm}[H]
   \scriptsize
   \caption{Distributed CWB algorithm}\label{algo:dcwb}
@@ -2084,55 +2211,65 @@
       \While{$m \leq M$}
           \State $\rmi = -\left.\pd{\Lxyi}{f(\xi)}\right|_{f = \fmdh},\ \ \forall i \in \{1, \dots, n\}$
           \For{$\blk \in \{1, \dots, \blK\}$}\tikzmk{B}\boxtrans
-              \State \tikzmk{A}$\tbmh_\blk = \operatorname{distFit(\design_{k,1}, \dots, \design_{k,\nSites}, \rmm_1, \rmm_\nSites, \penMat_k)}$
+              \State \tikzmk{A}$\tbmh_\blk = \operatorname{distFit(\design_{k,1}, \dots, \design_{k,\nSites}, \rmm_1, \dots, \rmm_\nSites, \penMat_k)}$
               \State$\tbmh_{\lsite} = \operatorname{getSiteEffects}(\tbmh_{{\lsite}, 1}, \dots, \tbmh_{{\lsite},\nSites})$\tikzmk{B}\boxittwo{olivedrab}
-              \State \tikzmk{A}$\sse_\blk = \sum_{i=1}^n(\rmi - b_\blk(\xi | \tbmh_\blk))^2$\tikzmk{B}\boxtrans
-              \State \tikzmk{A}$\sse_{\lsite} = \sum_{i=1}^n(\rmi - b_{\lsite}(\xi | \tbmh_{\lsite}))^2$
+              \State \tikzmk{A}$\sse_\blk = \operatorname{aggregate}(\operatorname{get}(\sse_{k,1}, \dots, \sse_{k,\nSites}))$
+              \State $\sse_{\lsite} = \operatorname{aggregate}(\operatorname{get}(\sse_{\lsite,1}, \dots, \sse_{\lsite,\nSites}))$\tikzmk{B}\boxtrans
           \EndFor
-          \State $\blk^{[m]} = \argmin_{\blk\in\{1, \dots, \blK, 1_{\times}, \dots, \blK_{\times}\}} \sse_\blk$\hspace{0.4cm}\tikzmk{B}\boxittwo{olivedrab}
+          \State $\blk^{[m]} = \argmin_{\blk\in\{1, \dots, \blK, 1_{\times}, \dots, \blK_{\times}\}} \sse_\blk$\hspace{0.4cm}
           \State \tikzmk{A}$\fmh(\xv) = \fmdh(\xv) + \nu b_{\blk^{[m]}} (\xv | \tbmh_{\blk^{[m]}})$\tikzmk{B}\boxtrans
       \EndWhile
       \State \textbf{return} $\fh = \fmh$
   \EndProcedure
   \end{algorithmic}
   \end{algorithm}
+  \vspace{-0.5cm}
+  {\small\textbf{Note:} The algorithm requires further refinements like sharing of main effects from host to sites or sharing of the SSE values from the sites to the host.}
 \end{frame}
 
-\fSlide{Distributed CWB}{Additional comments and comparisons}
-
-\begin{frame}{Additional comments}
-  \begin{itemize}
-    \item
-      Algorithm~\ref{algo:dcwb} must also consider
-      \begin{itemize}
-          \item to communicate $\tbmh_{k^{[m]}}$ from the host to the sites so that they can calculate $\rmm_s$ locally and
-          \item the sites must share the SSE values of the main and site-specific effects to enable the base learner selection.
-      \end{itemize}
-    \item
-      Besides runtime or memory, communication costs are a third component that affects efficiency. 
-    \item
-      Algorithm~\ref{algo:dcwb} requires communicating $2Kd + 2K$ values in each iteration from each site to the host.
-    \item
-      An additional penalty $\lambda_0$ is added to the first-order differences of the site-specific effects and allows to favor the main effect over the site-specific effects.
-    \item
-      Algorithm~\ref{algo:dcwb} is implemented in DataSHIELD~\citep{gaye2014datashield} and available on GitHub \footnote[frame,1]{\url{https://github.com/schalkdaniel/dsCWB}}.
-  \end{itemize}
+\begin{frame}{Distributed CWB algorithm}
+   \begin{figure}
+       \centering\vspace{-0.2cm}
+       \includegraphics[width=0.7\textwidth]{figures/fig-dcwb.png}
+   \end{figure} 
 \end{frame}
 
+\fSlide{Distributed CWB}{Comparison with pooled approaches}
 
-\begin{frame}{Comparisons}
+%\begin{frame}{Additional comments}
+%  \begin{itemize}
+%    \item
+%      The distributed CWB algorithm (Algorithm~\ref{algo:dcwb}) must also consider
+%      \begin{itemize}
+%          \item to communicate $\tbmh_{k^{[m]}}$ from the host to the sites so that they can calculate $\rmm_s$ locally and
+%          \item the sites must share the SSE values of the main and site-specific effects to enable the base learner selection.
+%      \end{itemize}
+%    \item
+%      Besides runtime or memory, communication costs are a third component that affects efficiency. 
+%    \item
+%      Algorithm~\ref{algo:dcwb} requires communicating $2Kd + 2K$ values in each iteration from each site to the host.
+%    \item
+%      An additional penalty $\lambda_0$ is added to the first-order differences of the site-specific effects and allows to favor the main effect over the site-specific effects.
+%    \item
+%      Algorithm~\ref{algo:dcwb} is implemented in DataSHIELD~\citep{gaye2014datashield} and available on GitHub \footnote[frame,1]{\url{https://github.com/schalkdaniel/dsCWB}}.
+%  \end{itemize}
+%\end{frame}
+
+
+\begin{frame}{Comparison with pooled approaches}
   \begin{itemize}
     \item \textbf{Reminder:} The proposed algorithm is a lossless and distributed pendant to CWB on the merged data.
     \item Instead of benchmarking the algorithm, we compared it with a GAMM fitted with \texttt{mgcv}.
   \end{itemize}
-  \begin{figure}
-    \centering
-    \includegraphics[width=0.9\textwidth]{figures/fig-dcwb-effect-decomposition.pdf}
-  \end{figure}
-  \vspace{-0.2cm}
+%  \begin{figure}
+%    \centering
+%    \includegraphics[width=0.9\textwidth]{figures/fig-dcwb-effect-decomposition.pdf}
+%  \end{figure}
+%  \vspace{-0.2cm}
   \begin{figure}
     \centering
     \includegraphics[width=0.8\textwidth]{figures/fig-dcwb-effect-comparison.pdf}
+    \caption{\small(Figure reference: \citet{schalk2022distcwb})}
   \end{figure}
 \end{frame}
 
@@ -2163,14 +2300,13 @@
 
 \section{Further contributions}
 
-\begin{frame}{Publication [1]}
+\begin{frame}{Publication \citep{schalk2018compboost}}
   \vspace{-0.2cm}
   \begin{figure}
     \centering
-    \frame{\includegraphics[width=0.7\textwidth]{figures/fig-compboost-paper.png}}
+    \frame{\includegraphics[width=0.6\textwidth]{figures/fig-compboost-paper.png}}
   \end{figure}
-  \vspace{-0.4cm}
-
+  \vspace{-0.2cm}
   \textbf{Contributions:}
   \begin{itemize}
     \item
@@ -2188,13 +2324,9 @@
     \item
       \texttt{compboost} is an \texttt{R} package that implements CWB.
     \item
-      The core is implemented in \texttt{C++} for faster runtime and exportet via \texttt{Rcpp} to \texttt{R}.
+      The core is implemented in \texttt{C++} for faster runtime and exported via \texttt{Rcpp} to \texttt{R}.
     \item
-      \texttt{compboost} is available on CRAN.
-    \item
-      Wrapper functions to easily fit models.
-    \item
-      \texttt{mlr3} learners to, e.g., evaluation and tune the model.
+      \texttt{mlr3} learners to, e.g., evaluate and tune the model.
     \item
       Parallelized model fitting with \texttt{OpenMP} and model export as \texttt{JSON}.
   \end{itemize}
@@ -2227,10 +2359,13 @@ plotBaselearnerTraces(cb) | plotPEUni(cb, "charExclamation") |
 \begin{frame}{Speedup compared to mboost}
   \begin{figure}
     \centering
-    \includegraphics[width=\textwidth]{figures/fig-cacb-mboost-comparison.pdf}
+    \includegraphics[width=0.8\textwidth]{figures/fig-cacb-mboost-comparison.pdf}
+    \caption{\small(Figure reference: \citet{schalk2022accelerated})}
   \end{figure}
+  \vspace{-0.3cm}
   \begin{itemize}
-    \item[$\Rightarrow$] The pure implementation (CWB, green) is up to 5 times and with binning up to 10 times faster than \texttt{mboost}. ACWB and HCWB elevate the speedup even more.
+    \item The pure implementation (CWB, green) is up to 5 times and with binning up to 10 times faster than \texttt{mboost}. 
+    \item ACWB and HCWB elevate the speedup even more.
   \end{itemize}
 \end{frame}
 
@@ -2249,18 +2384,17 @@ plotBaselearnerTraces(cb) | plotPEUni(cb, "charExclamation") |
 %  \end{itemize}
 %\end{frame}
 
-\begin{frame}{Publication [3]}
+\begin{frame}{Publication \citep{coors2021autocompboost}}
   \vspace{-0.2cm}
   \begin{figure}
     \centering
     \frame{\includegraphics[width=0.7\textwidth]{figures/fig-paper-autocwb.png}}
   \end{figure}
-  \vspace{-0.4cm}
-
+%  \vspace{-0.4cm}
   \textbf{Contributions:}
   \begin{itemize}
     \item
-      Interpretable automated ML (AutoML) system with CWB as the fitting engine.
+      Interpretable automated ML (AutoML) system based on three stages with increasing complexity and CWB as the fitting engine.
     \item
       Tools to assess the required model complexity and the decision-making process.
   \end{itemize}
@@ -2359,15 +2493,14 @@ plotBaselearnerTraces(cb) | plotPEUni(cb, "charExclamation") |
 
 %\section{Distributed model evaluation}
 
-\begin{frame}{Publications [5,6]}
+\begin{frame}{Publications \citep{schalk2022dauc,schalk2022dsBinVal}}
   \vspace{-0.2cm}
   \begin{figure}
     \centering
     \frame{\includegraphics[width=0.472\textwidth]{figures/fig-paper-dauc.png}}
     \frame{\includegraphics[width=0.42\textwidth]{figures/fig-paper-dsBinVal.png}}
   \end{figure}
-  \vspace{-0.4cm}
-
+  %\vspace{-0.4cm}
   \textbf{Contributions:}
   \begin{itemize}
     \item
@@ -2433,7 +2566,7 @@ plotBaselearnerTraces(cb) | plotPEUni(cb, "charExclamation") |
             CWB for big data (Software: \texttt{compboost}~\citep{schalk2018compboost}).
         \end{itemize}
         \item
-          \textbf{Distirbuted computing}~\citep{schalk2022distcwb}
+          \textbf{Distributed computing}~\citep{schalk2022distcwb}
             \begin{itemize}
               \item[$\Rightarrow$]
                 Fit CWB to (horizontally) distributed data sets by preserving privacy (Software: \texttt{dsCWB}).
@@ -2443,7 +2576,7 @@ plotBaselearnerTraces(cb) | plotPEUni(cb, "charExclamation") |
             Easy access to CWB also for non-experts by a multi-stage approach (Software: \texttt{Autocompboost}).
           \end{itemize}
       \end{itemize}
-      Additionally: Distributed and privacy-preserving ROC analysis~\citep{schalk2022dauc} (Software: \texttt{dsBinVal}~\citep{schalk2022dsBinVal}).
+%      Additionally: Distributed and privacy-preserving ROC analysis~\citep{schalk2022dauc} (Software: \texttt{dsBinVal}~\citep{schalk2022dsBinVal}).
 \end{frame}
 
 \begin{frame}{Outlook}
@@ -2470,14 +2603,6 @@ plotBaselearnerTraces(cb) | plotPEUni(cb, "charExclamation") |
     \end{itemize}
 \end{frame}
 
-
-\begin{frame}{Outlook}
-  \begin{figure}
-    \centering
-    \includegraphics[width=0.45\textwidth]{figures/topics.png}
-  \end{figure}
-\end{frame}
-
 \begin{frame}{Outlook}
   \begin{figure}
     \centering
@@ -2488,7 +2613,6 @@ plotBaselearnerTraces(cb) | plotPEUni(cb, "charExclamation") |
       \item Distributed \texttt{Autocompboost} that fits a privacy-preserving CWB variant to horizontally and vertically distributed data sets.\vspace{0.1cm}
       \item Provide practitioners with insights about the required complexity, feature importance, main effects and site-specific corrections, as well as transparent decision-making.
     \end{itemize}
-    \addtocounter{framenumber}{-1}
 \end{frame}
 
 \setbeamercolor{background canvas}{bg=metropolis_theme_color}
@@ -2614,7 +2738,7 @@ plotBaselearnerTraces(cb) | plotPEUni(cb, "charExclamation") |
       From now on, each base learner $b_k$ is defined by a basis transformation $g_k : \Xspace \to \R^{d_k}$ with $g_k(\xv) = (g_{k,1}(\xv), \dots, g_{k,d_k}(\xv))^\tran$.
 
     \item
-      The base learners are also restricted to be linear in the parameters: $b_k(\xv | \tb) = g_k(\xv)^\tran \tb$
+      The base learners are also restricted to be linear in the parameters: $b_k(\xv | \tb_k) = g_k(\xv)^\tran \tb_k$
 
     \item
       Due to the linearity, the sum of two base learners $b_k(\xv | \tb_l) + b_k(\xv | \tb_m)$ equals $b_k(\xv | \tb_l + \tb_m)$.
@@ -2633,31 +2757,36 @@ plotBaselearnerTraces(cb) | plotPEUni(cb, "charExclamation") |
 
 \section*{ACWB}
 
-\begin{frame}{Idea}
-
+\begin{frame}{Accelerated gradient boosting machine}
   \begin{itemize}
     \item
-      Using Nesterovs momentum was first proposed by \cite{biau2019accelerated} and refined in an algorithm called Accelerated Gradient Boosting Machine (AGBM) by \cite{lu2020accelerating}:
+      Applying Nesterov's momentum in GB was already proposed by \cite{biau2019accelerated} and refined in an algorithm called Accelerated Gradient Boosting Machine (AGBM) by \cite{lu2020accelerating}:
       \begin{align*}
       g^{[m]} &= (1 - \theta_m) f^{[m]} + \theta_m h^{[m]}\\
-      f^{[m+1]} &= g^{[m]} + \eta b^{[m]} \\
-      h^{[m+1]} &= h^{[m]} + \eta / \theta_m b^{[m]}_{\text{cor}}
+      f^{[m+1]} &= g^{[m]} + \nu {\color{red}b^{[m]}} \\
+      h^{[m+1]} &= h^{[m]} + \gamma\nu / \theta_m {\color{blue}b^{[m]}_{\text{cor}}}
       \end{align*}
-    \item
-      Incorporate these adjustments into CWB and make sure all its advantages are preserved.
+      \[\Rightarrow\ f^{[m+1]} = f^{[m]} + \nu b^{[m]} + \theta_m (h^{[m]} - f^{[m]})\]%\vspace{0.1cm}
+    \item Momentum in the direction of $h^{[m]} - f^{[m]}$.
+    \item In each iteration, two base learners ${\color{red}b^{[m]}}$ and ${\color{blue}b^{[m]}_{\text{cor}}}$.
+    \item ($\theta_m = 2 / (m+2),\ m = 0, \dots, M - 1$, momentum $\gamma \in (0,1]$)
   \end{itemize}
-  %\textbf{Memory reduction}
-  %\begin{itemize}
-    %\item
-      %Reduce the memory consumption of CWB
-    %\item
-      %Apply binning~\citep{} to reduce the matrix size of each base learner and ensure
-    %\item
-      %Side effect: The runtime also gets better.
-  %\end{itemize}
-
+  \addtocounter{framenumber}{-1}
 \end{frame}
 
+\begin{frame}{Accelerated gradient boosting machine}
+      \begin{align*}
+      g^{[m]} &= (1 - \theta_m) f^{[m]} + \theta_m h^{[m]}\\
+      f^{[m+1]} &=g^{[m]} + \nu b^{[m]} \\
+      h^{[m+1]} &= h^{[m]} + \nu / \theta_m \textcolor{blue}{b^{[m]}_{\text{cor}}}
+      \end{align*}  
+      \begin{itemize}
+    \item
+      A second base learner $\textcolor{blue}{b^{[m]}_{\text{cor}}}$ is fitted to \enquote{error-corrected pseudo residuals} $\bm{c}^{[m]}$:
+      \[c^{[m](i)} = \rmi + \frac{m}{m+1}(c^{[m-1](i)} - \hat{b}_{\text{cor}}^{[m-1]}(\xi))\]
+      This accelerates the fitting into the direction of $\bm{c}^{[m]}$.
+  \end{itemize}
+\end{frame}
 
 \begin{frame}{Base learners in AGBM}
   \begin{itemize}
@@ -2678,46 +2807,244 @@ plotBaselearnerTraces(cb) | plotPEUni(cb, "charExclamation") |
   \end{itemize}
 \end{frame}
 
-
-\begin{frame}{Accelerating component-wise boosting}
-  In \citet{schalk2022accelerated}, we introduced an accelerated CWB (ACWB)
-  version by incorporating AGBM:
-
-  \begin{itemize}
-    \item
-      Both base learners, \(b^{[m]}\) and \(b^{[m]}_{\text{cor}}\), are the
-      result of a selection process that chooses one of \(b_1, \dots, b_K\)
-      w.r.t. to the minimal SSE on the respective pseudo residuals \(\rmm\)
-      and \(\bm{c}^{[m]}\).
-    \item
-      Update the estimated parameters accordingly to allow the estimation of
-      partial feature effects.
-  \end{itemize}
-  Considering these points allows maintaining all advantages of CWB in
-  ACWB. Details are outlined in the publication.
+\begin{frame}{Simulation study to assess the estimation quality}
+    To assess the estimation quality, we measured the mean integrated squared error (MISE) between a true simulated and the estimated effects from CWB, ACWB, and HCWB: 
+    \begin{figure}
+        \centering
+        \includegraphics[width=0.6\textwidth]{figures/fig-acwb-estimation-quality.png}
+        \caption{\small(Figure reference: \citet{schalk2022accelerated}) The left column shows $\operatorname{MISE}(CWB) - \operatorname{MISE}(ACWB)$ and the right column $\operatorname{MISE}(CWB) - \operatorname{MISE}(HCWB)$}
+    \end{figure}
 \end{frame}
 
-\begin{frame}{ACWB Algorithm}
-   \begin{figure}
-       \centering
-       \includegraphics[width=0.85\textwidth]{figures/acwb.png}
-   \end{figure} 
+\section*{Binning}
+
+\begin{frame}{Efficiency of binning}
+    \begin{figure}
+        \centering
+        \includegraphics[width=0.8\textwidth]{figures/fig-binning-mem-runtime.png}
+        \caption{\small(Figure reference: \citet{schalk2022accelerated})}
+    \end{figure}
 \end{frame}
+
+\begin{frame}{MISE for binning}
+    \begin{figure}
+        \centering
+        \includegraphics[width=0.8\textwidth]{figures/fig-binning-mise.png}
+        \caption{\small(Figure reference: \citet{schalk2022accelerated})}
+    \end{figure}
+\end{frame}
+
+\begin{frame}{Binning: Grid comparison with uniformly distributed data}
+    \begin{figure}
+        \centering
+        \includegraphics[width=\textwidth]{figures/fig-bin-uni.pdf}
+    \end{figure} 
+\end{frame}
+
+\begin{frame}{Binning: Grid comparison with outlier}
+    \begin{figure}
+        \centering
+        \includegraphics[width=\textwidth]{figures/fig-bin-outlier.pdf}
+    \end{figure} 
+\end{frame}
+
+\begin{frame}{Binning: Grid comparison with skewed distribution ($\chi^2$)}
+    \begin{figure}
+        \centering
+        \includegraphics[width=\textwidth]{figures/fig-bin-chisq.pdf}
+    \end{figure} 
+\end{frame}
+
+\begin{frame}{Binning: Grid comparison with multimodal distribution}
+    \begin{figure}
+        \centering
+        \includegraphics[width=\textwidth]{figures/fig-bin-binormal.pdf}
+    \end{figure} 
+\end{frame}
+
+
+\section*{Efficiency: Further comparison}
 
 \begin{frame}{Runtime comparisons of CWB variants}
   \begin{figure}
     \centering
     \includegraphics[width=\textwidth]{figures/fig-cacb-runtimes.pdf}
-  \end{figure}
+        \caption{\small(Figure reference: \citet{schalk2022accelerated})}  
+    \end{figure}
   5000 boosting iterations without early stopping.
 \end{frame}
 
+\section*{Reconstruct original data}
 
-
-
-
-
-
+\begin{frame}{Reconstruct data}
+    \begin{tabular}{cc}
+        \includegraphics[align=c, width=0.45\textwidth]{figures/fig-reconstruct0.png} & \begin{minipage}{0.5\textwidth}
+            Given: Basis transformation $g$ and 
+            \[
+            \left.\begin{array}{l}
+                \design^\tran \design \\
+                \design^\tran y
+            \end{array}\right\}\Rightarrow \tbh 
+            \]%^ \\
+            Also: $n = d$
+        %\end{align*}
+        \end{minipage}
+    \end{tabular}
+\end{frame}
+\begin{frame}{Reconstruct data}
+    \begin{tabular}{cc}
+        \includegraphics[align=c, width=0.45\textwidth]{figures/fig-reconstruct01.png} & \begin{minipage}{0.5\textwidth}
+            Given: Basis transformation $g$ and 
+            \[
+            \left.\begin{array}{l}
+                \design^\tran \design \\
+                \design^\tran y
+            \end{array}\right\}\Rightarrow \tbh 
+            \]%^ \\
+            Also: $n = d$
+        %\end{align*}
+        \end{minipage}
+    \end{tabular}
+    \begin{enumerate}
+        \item Guess new $\xv_0\in\R^n$
+    \end{enumerate}
+    \addtocounter{framenumber}{-1}
+\end{frame}
+\begin{frame}{Reconstruct data}
+    \begin{tabular}{cc}
+        \includegraphics[align=c, width=0.45\textwidth]{figures/fig-reconstruct02.png} & \begin{minipage}{0.5\textwidth}
+            Given: Basis transformation $g$ and 
+            \[
+            \left.\begin{array}{l}
+                \design^\tran \design \\
+                \design^\tran y
+            \end{array}\right\}\Rightarrow \tbh 
+            \]%^ \\
+            Also: $n = d$
+        %\end{align*}
+        \end{minipage}
+    \end{tabular}
+    \begin{enumerate}
+        \item Guess new $\xv_0\in\R^n$
+        \item Calculate $\design_0 = (g(\xv_0^{(1)})^\tran, \dots, g(\xv_0^{(n)})^\tran)^\tran$.
+        \item Predict $\hat{\yv}_0 = \design_0 \tbh$.
+    \end{enumerate}
+    \addtocounter{framenumber}{-1}
+\end{frame}
+\begin{frame}{Reconstruct data}
+    \begin{tabular}{cc}
+        \includegraphics[align=c, width=0.45\textwidth]{figures/fig-reconstruct1.png} & \begin{minipage}{0.5\textwidth}
+            Given: Basis transformation $g$ and 
+            \[
+            \left.\begin{array}{l}
+                \design^\tran \design \\
+                \design^\tran y
+            \end{array}\right\}\Rightarrow \tbh 
+            \]%^ \\
+            Also: $n = d$
+        %\end{align*}
+        \end{minipage}
+    \end{tabular}
+    \begin{enumerate}
+        \item Guess new $\xv_0\in\R^n$
+        \item Calculate $\design_0 = (g(\xv_0^{(1)})^\tran, \dots, g(\xv_0^{(n)})^\tran)^\tran$.
+        \item Predict $\hat{\yv}_0 = \design_0 \tbh$.
+        \item Measure the distance $m(\xv_0) = \| \design^\tran y - \design_0^\tran \hat{\yv}_0\|$.
+    \end{enumerate}
+    \addtocounter{framenumber}{-1}
+\end{frame}
+\begin{frame}{Reconstruct data}
+    \begin{tabular}{cc}
+        \includegraphics[align=c, width=0.45\textwidth]{figures/fig-reconstruct1.png} & \begin{minipage}{0.5\textwidth}
+            Given: Basis transformation $g$ and 
+            \[
+            \left.\begin{array}{l}
+                \design^\tran \design \\
+                \design^\tran y
+            \end{array}\right\}\Rightarrow \tbh 
+            \]%^ \\
+            Also: $n = d$
+        %\end{align*}
+        \end{minipage}
+    \end{tabular}
+    \begin{enumerate}
+        \item Guess new $\xv_0\in\R^n$
+        \item Calculate $\design_0 = (g(\xv_0^{(1)})^\tran, \dots, g(\xv_0^{(n)})^\tran)^\tran$.
+        \item Predict $\hat{\yv}_0 = \design_0 \tbh$.
+        \item Measure the distance $m(\xv_0) = \| \design^\tran y - \design_0^\tran \hat{\yv}_0\|$.
+    \end{enumerate}
+    Optimize $\xv^\ast = \argmin_{\xv_0\in\R^n}(m(\xv_0))$ 
+    \addtocounter{framenumber}{-1}
+\end{frame}
+\begin{frame}{Reconstruct data}
+    \begin{tabular}{cc}
+        \includegraphics[align=c, width=0.45\textwidth]{figures/fig-reconstruct2.png} & \begin{minipage}{0.5\textwidth}
+            Given: Basis transformation $g$ and 
+            \[
+            \left.\begin{array}{l}
+                \design^\tran \design \\
+                \design^\tran y
+            \end{array}\right\}\Rightarrow \tbh 
+            \]%^ \\
+            Also: $n = d$
+        %\end{align*}
+        \end{minipage}
+    \end{tabular}
+    \begin{enumerate}
+        \item Guess new $\xv_0\in\R^n$
+        \item Calculate $\design_0 = (g(\xv_0^{(1)})^\tran, \dots, g(\xv_0^{(n)})^\tran)^\tran$.
+        \item Predict $\hat{\yv}_0 = \design_0 \tbh$.
+        \item Measure the distance $m(\xv_0) = \| \design^\tran y - \design_0^\tran \hat{\yv}_0\|$.
+    \end{enumerate}
+    Optimize $\xv^\ast = \argmin_{\xv_0\in\R^n}(m(\xv_0))$ 
+    \addtocounter{framenumber}{-1}
+\end{frame}
+\begin{frame}{Reconstruct data}
+    \begin{tabular}{cc}
+        \includegraphics[align=c, width=0.45\textwidth]{figures/fig-reconstruct3.png} & \begin{minipage}{0.5\textwidth}
+            Given: Basis transformation $g$ and 
+            \[
+            \left.\begin{array}{l}
+                \design^\tran \design \\
+                \design^\tran y
+            \end{array}\right\}\Rightarrow \tbh 
+            \]%^ \\
+            Also: $n = d$
+        %\end{align*}
+        \end{minipage}
+    \end{tabular}
+    \begin{enumerate}
+        \item Guess new $\xv_0\in\R^n$
+        \item Calculate $\design_0 = (g(\xv_0^{(1)})^\tran, \dots, g(\xv_0^{(n)})^\tran)^\tran$.
+        \item Predict $\hat{\yv}_0 = \design_0 \tbh$.
+        \item Measure the distance $m(\xv_0) = \| \design^\tran y - \design_0^\tran \hat{\yv}_0\|$.
+    \end{enumerate}
+    Optimize $\xv^\ast = \argmin_{\xv_0\in\R^n}(m(\xv_0))$ 
+    \addtocounter{framenumber}{-1}
+\end{frame}
+\begin{frame}{Reconstruct data}
+    \begin{tabular}{cc}
+        \includegraphics[align=c, width=0.45\textwidth]{figures/fig-reconstruct4.png} & \begin{minipage}{0.5\textwidth}
+            Given: Basis transformation $g$ and 
+            \[
+            \left.\begin{array}{l}
+                \design^\tran \design \\
+                \design^\tran y
+            \end{array}\right\}\Rightarrow \tbh 
+            \]%^ \\
+            Also: $n = d$
+        %\end{align*}
+        \end{minipage}
+    \end{tabular}
+    \begin{enumerate}
+        \item Guess new $\xv_0\in\R^n$
+        \item Calculate $\design_0 = (g(\xv_0^{(1)})^\tran, \dots, g(\xv_0^{(n)})^\tran)^\tran$.
+        \item Predict $\hat{\yv}_0 = \design_0 \tbh$.
+        \item Measure the distance $m(\xv_0) = \| \design^\tran y - \design_0^\tran \hat{\yv}_0\|$.
+    \end{enumerate}
+    Optimize $\xv^\ast = \argmin_{\xv_0\in\R^n}(m(\xv_0))$ $\Rightarrow$ Calculate $y = (\design_0^\tran)^{-1}\design^\tran y$ %($\design_0$ is invertible due to $n = d$).
+    \addtocounter{framenumber}{-1}
+\end{frame}
 
 
 \section*{Automation}
@@ -2891,97 +3218,6 @@ plotBaselearnerTraces(cb) | plotPEUni(cb, "charExclamation") |
   \end{itemize}
 	\addtocounter{framenumber}{-1}
 \end{frame}
-
-\section*{\texttt{compboost}}
-
-\begin{frame}{Publication [1]}
-  \vspace{-0.2cm}
-  \begin{figure}
-    \centering
-    \frame{\includegraphics[width=0.7\textwidth]{figures/fig-compboost-paper.png}}
-  \end{figure}
-  \vspace{-0.4cm}
-
-  \textbf{Aims:}
-  \begin{itemize}
-    \item
-      Efficient and object-oriented CWB implementation with an easy to understand structure.
-    \item
-      miau
-  \end{itemize}
-\end{frame}
-
-
-\begin{frame}{About}
-  \begin{minipage}[t]{0.18\textwidth}
-    \includegraphics[width=\linewidth]{figures/fig-compboost-logo.png}
-  \end{minipage}
-  \begin{minipage}{0.8\textwidth}
-  \begin{itemize}
-    \item
-      \texttt{compboost} is an \texttt{R} package that implements CWB.
-    \item
-      The core is implemented in \texttt{C++} for faster runtime and exportet via \texttt{Rcpp} to \texttt{R}.
-    \item
-      \texttt{compboost} is available on CRAN.
-    \item
-      Wrapper functions to easily fit models.
-    \item
-      \texttt{mlr3} learners to, e.g., evaluation and tune the model.
-    \item
-      Parallelized model fitting with \texttt{OpenMP} and model export as \texttt{JSON}.
-  \end{itemize}
-  \end{minipage}
-\end{frame}
-
-\begin{frame}[fragile]{Demo}
-  \vphantom{code}
-  {
-  \scriptsize
-  \begin{Shaded}
-\begin{verbatim}
-library(compboost)
-
-cb = boostComponents(spam, "type", iterations = 0, df = 5)
-cb$addTensor("money", "your")
-cb$train(1000)
-
-plotBaselearnerTraces(cb) | plotPEUni(cb, "charExclamation") |
-  plotTensor(cb, "money_your_tensor") | plotFeatureImportance(cb, 10)
-\end{verbatim}
-  \end{Shaded}
-  }
-  \begin{figure}
-    \centering
-    \includegraphics[width=\textwidth]{figures/fig-cwb-demo.png}
-  \end{figure}
-\end{frame}
-
-\begin{frame}{Speedup compared to mboost}
-  \begin{figure}
-    \centering
-    \includegraphics[width=\textwidth]{figures/fig-cacb-mboost-comparison.pdf}
-  \end{figure}
-  \begin{itemize}
-    \item[$\Rightarrow$] The pure implementation (CWB, green) is up to 5 times and with binning up to 10 times faster than \texttt{mboost}. ACWB and HCWB elevates the speedup even more.
-  \end{itemize}
-\end{frame}
-
-
-\begin{frame}{Summary and Outlook}
-  \textbf{Summary:}
-  \begin{itemize}
-    \item Fast and flexible toolbox for CWB.
-    \item Allows to define custom losses and base learner.
-    \item High-level functionality to analyse the model.
-  \end{itemize}
-  \textbf{Outlook:}
-  \begin{itemize}
-    \item Better binning support for RWTP base learner.
-    \item Support for more copmlex tasks like location, scale, and shape.
-  \end{itemize}
-\end{frame}
-
 
 
 
